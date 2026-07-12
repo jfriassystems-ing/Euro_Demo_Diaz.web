@@ -7,7 +7,6 @@ const dotenv = require('dotenv');
 const path = require('path');
 const rateLimit = require('express-rate-limit');
 
-// ===== CONFIGURACIÓN DE ENTORNO =====
 dotenv.config();
 
 console.log('🔍 Variables de entorno:');
@@ -15,14 +14,11 @@ console.log('  DB_URL:', process.env.DB_URL ? '✅ DEFINIDA' : '❌ FALTA');
 console.log('  JWT_SECRET:', process.env.JWT_SECRET ? '✅ DEFINIDA' : '❌ FALTA');
 console.log('  NODE_ENV:', process.env.NODE_ENV || 'development');
 
-// ===== BASE DE DATOS =====
 const pool = require('./src/config/database');
 
-// ===== EXPRESS =====
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-// ===== MIDDLEWARE =====
 app.use(helmet({ contentSecurityPolicy: false, crossOriginEmbedderPolicy: false }));
 app.use(compression());
 app.use(morgan('combined'));
@@ -44,8 +40,8 @@ app.use('/api/', limiter);
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
-// ===== ARCHIVOS ESTÁTICOS =====
-app.use(express.static(path.join(__dirname)));
+// ===== SERVIR ARCHIVOS ESTÁTICOS DESDE PUBLIC =====
+app.use(express.static(path.join(__dirname, 'public')));
 
 // ===== RUTAS =====
 const authRoutes = require('./routes/authRoutes');
@@ -66,15 +62,15 @@ app.use('/api/imagenes', imagenRoutes);
 
 // ===== FRONTEND =====
 app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, 'index.html'));
+    res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
 app.get('/admin', (req, res) => {
-    res.sendFile(path.join(__dirname, 'admin.html'));
+    res.sendFile(path.join(__dirname, 'public', 'admin.html'));
 });
 
 app.get('/checkout', (req, res) => {
-    res.sendFile(path.join(__dirname, 'checkout.html'));
+    res.sendFile(path.join(__dirname, 'public', 'checkout.html'));
 });
 
 app.get('/api', (req, res) => {
@@ -112,7 +108,6 @@ app.use((req, res) => {
     res.status(404).json({ success: false, message: 'Ruta no encontrada' });
 });
 
-// ===== INICIAR SERVIDOR =====
 app.listen(PORT, () => {
     console.log('═'.repeat(50));
     console.log('🚀 EUROMODADIAZ BACKEND');
