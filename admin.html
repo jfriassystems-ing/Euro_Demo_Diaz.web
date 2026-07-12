@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    
+    <!-- ===== TÍTULO Y SEO ===== -->
+    <title>Panel de Administración - EUROMODADIAZ</title>
+    <meta name="description" content="Panel de administración para EUROMODADIAZ. Gestiona pedidos, productos, categorías y marcas.">
+    <meta name="robots" content="noindex, nofollow">
+    
+    <!-- ===== OPEN GRAPH ===== -->
+    <meta property="og:title" content="Panel de Administración - EUROMODADIAZ">
+    <meta property="og:description" content="Panel de administración para EUROMODADIAZ.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://euromodadiaz.vercel.app/admin">
+    
+    <!-- ===== CSS ===== -->
+    <link rel="stylesheet" href="src/css/style.css">
+    <link rel="stylesheet" href="src/css/admin.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- ===== FAVICON ===== -->
+    <link rel="icon" href="src/assets/favicon.ico" type="image/x-icon">
+</head>
+<body>
+
+    <!-- ===== HEADER ===== -->
+    <header class="header admin-header">
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <a href="/">
+                        <span>📊 EUROMODADIAZ</span>
+                        <span style="font-size:0.7rem;font-weight:400;color:#e74c3c;background:#fef0ed;padding:2px 10px;border-radius:20px;margin-left:10px;">Admin</span>
+                    </a>
+                </div>
+                <div class="header-actions">
+                    <a href="index.html" class="btn-back">
+                        <i class="fas fa-store"></i> Tienda
+                    </a>
+                    <button class="btn-logout" id="logoutBtn">
+                        <i class="fas fa-sign-out-alt"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- ===== PANEL ===== -->
+    <section class="admin-panel">
+        <div class="container">
+            <!-- Stats -->
+            <div class="admin-stats" id="adminStats">
+                <div class="stat-card">
+                    <div class="stat-icon"><i class="fas fa-shopping-bag"></i></div>
+                    <div class="stat-info">
+                        <span class="stat-number" id="totalPedidos">0</span>
+                        <span class="stat-label">Total Pedidos</span>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon"><i class="fas fa-clock"></i></div>
+                    <div class="stat-info">
+                        <span class="stat-number" id="pedidosPendientes">0</span>
+                        <span class="stat-label">Pendientes</span>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon"><i class="fas fa-check-circle"></i></div>
+                    <div class="stat-info">
+                        <span class="stat-number" id="pedidosEntregados">0</span>
+                        <span class="stat-label">Entregados</span>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon"><i class="fas fa-dollar-sign"></i></div>
+                    <div class="stat-info">
+                        <span class="stat-number" id="totalVentas">RD$ 0</span>
+                        <span class="stat-label">Total Ventas</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tabs -->
+            <div class="admin-tabs">
+                <button class="tab-btn active" data-tab="pedidos">
+                    <i class="fas fa-list"></i> Pedidos
+                </button>
+                <button class="tab-btn" data-tab="productos">
+                    <i class="fas fa-box"></i> Productos
+                </button>
+            </div>
+
+            <!-- Tab: Pedidos -->
+            <div class="tab-content active" id="tabPedidos">
+                <div class="admin-actions">
+                    <button class="btn-refresh" onclick="cargarPedidos()">
+                        <i class="fas fa-sync"></i> Actualizar
+                    </button>
+                </div>
+                <div class="pedidos-table-container">
+                    <table class="pedidos-table" id="pedidosTable">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Cliente</th>
+                                <th>Teléfono</th>
+                                <th>Total</th>
+                                <th>Estado</th>
+                                <th>Fecha</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="pedidosBody">
+                            <tr>
+                                <td colspan="7" style="text-align:center;padding:40px;color:#b2bec3;">
+                                    <i class="fas fa-spinner fa-spin"></i> Cargando pedidos...
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Tab: Productos -->
+            <div class="tab-content" id="tabProductos">
+                <div class="admin-actions">
+                    <button class="btn-primary" onclick="abrirModalProducto()" style="padding:10px 24px;border-radius:10px;">
+                        <i class="fas fa-plus"></i> Nuevo Producto
+                    </button>
+                    <button class="btn-refresh" onclick="cargarProductosAdmin()">
+                        <i class="fas fa-sync"></i> Actualizar
+                    </button>
+                </div>
+                <div class="productos-grid-admin" id="productosAdminGrid">
+                    <div class="loading">Cargando productos...</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== MODAL: Cambiar estado ===== -->
+    <div class="modal" id="modalEstado">
+        <div class="modal-content modal-estado">
+            <div class="modal-header">
+                <h3><i class="fas fa-truck"></i> Cambiar Estado del Pedido</h3>
+                <button class="modal-close" onclick="cerrarModal('modalEstado')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="estado-card-cliente">
+                    <div class="estado-cliente-header">
+                        <span class="estado-pedido-id">Pedido #<span id="estadoPedidoId">-</span></span>
+                        <span class="estado-pedido-total" id="estadoPedidoTotal">RD$ 0.00</span>
+                    </div>
+                    <div class="estado-cliente-info">
+                        <div class="estado-cliente-item">
+                            <i class="fas fa-user"></i>
+                            <span id="estadoClienteNombre">-</span>
+                        </div>
+                        <div class="estado-cliente-item">
+                            <i class="fas fa-phone"></i>
+                            <span id="estadoClienteTelefono">-</span>
+                        </div>
+                        <div class="estado-cliente-item">
+                            <i class="fas fa-map-pin"></i>
+                            <span id="estadoClienteDireccion">-</span>
+                        </div>
+                        <div class="estado-cliente-item">
+                            <i class="fas fa-city"></i>
+                            <span id="estadoClienteCiudad">-</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="estado-cambio-box">
+                    <label class="estado-label">📌 Nuevo Estado</label>
+                    <select id="nuevoEstado" class="estado-select-modern">
+                        <option value="Pendiente">⏳ Pendiente</option>
+                        <option value="Confirmado">✅ Confirmado</option>
+                        <option value="En preparación">📦 En preparación</option>
+                        <option value="Listo para entrega">🚚 Listo para entrega</option>
+                        <option value="Entregado">🎯 Entregado</option>
+                        <option value="Cancelado">❌ Cancelado</option>
+                    </select>
+                    <label class="estado-label" style="margin-top:14px;">📝 Observación (opcional)</label>
+                    <input type="text" id="estadoObservacion" class="estado-input-modern" placeholder="Ej: Pedido confirmado por teléfono">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-cancel" onclick="cerrarModal('modalEstado')">Cancelar</button>
+                <button class="btn-primary" onclick="actualizarEstado()">
+                    <i class="fas fa-check"></i> Actualizar Estado
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== MODAL: Nuevo producto ===== -->
+    <div class="modal" id="modalProducto">
+        <div class="modal-content modal-lg">
+            <div class="modal-header">
+                <h3 id="modalProductoTitulo">Nuevo Producto</h3>
+                <button class="modal-close" onclick="cerrarModal('modalProducto')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="productoForm">
+                    <!-- FILA 1: Nombre y Precio -->
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Nombre <span class="required">*</span></label>
+                            <input type="text" id="prodNombre" placeholder="Ej: Camiseta Básica Negra" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Precio (RD$) <span class="required">*</span></label>
+                            <input type="number" id="prodPrecio" step="0.01" placeholder="0.00" required>
+                        </div>
+                    </div>
+
+                    <!-- FILA 2: Categoría y Marca -->
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Categoría</label>
+                            <div class="select-with-actions">
+                                <select id="prodCategoria">
+                                    <option value="">Seleccionar categoría</option>
+                                </select>
+                                <button type="button" class="btn-add-option" onclick="abrirModalNuevaCategoria()" title="Nueva categoría">
+                                    <i class="fas fa-plus"></i>
+                                </button>
+                                <button type="button" class="btn-delete-option" onclick="eliminarCategoria()" title="Eliminar categoría">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Marca</label>
+                            <div class="select-with-actions">
+                                <select id="prodMarca">
+                                    <option value="">Seleccionar marca</option>
+                                </select>
+                                <button type="button" class="btn-add-option" onclick="abrirModalNuevaMarca()" title="Nueva marca">
+                                    <i class="fas fa-plus"></i>
+                                </button>
+                                <button type="button" class="btn-delete-option" onclick="eliminarMarca()" title="Eliminar marca">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Descripción -->
+                    <div class="form-group">
+                        <label>Descripción</label>
+                        <textarea id="prodDescripcion" rows="3" placeholder="Describe el producto..."></textarea>
+                    </div>
+
+                    <!-- SKU -->
+                    <div class="form-group">
+                        <label>SKU (código único)</label>
+                        <div class="sku-group">
+                            <input type="text" id="prodSku" placeholder="Se genera automáticamente">
+                            <button type="button" class="btn-generate-sku" onclick="generarSKU()" title="Generar SKU">
+                                <i class="fas fa-sync"></i>
+                            </button>
+                        </div>
+                        <small class="help-text">El SKU se genera automáticamente al guardar</small>
+                    </div>
+
+                    <!-- ===== ✅ AGOTADO ===== -->
+                    <div class="form-group" style="display:flex;align-items:center;gap:12px;padding:8px 0;border-top:1px solid #f1f2f6;margin-top:8px;">
+                        <label style="margin:0;display:flex;align-items:center;gap:8px;cursor:pointer;">
+                            <input type="checkbox" id="prodAgotado" style="width:20px;height:20px;accent-color:#e74c3c;">
+                            <span style="font-weight:600;color:#e74c3c;">📦 Producto Agotado</span>
+                        </label>
+                        
+                    </div>
+                     
+                    <!-- ===== ✅ EN OFERTA (NUEVO) ===== -->
+<div class="form-group" style="display:flex;align-items:center;gap:12px;padding:8px 0;border-top:1px solid #f1f2f6;margin-top:8px;">
+    <label style="margin:0;display:flex;align-items:center;gap:8px;cursor:pointer;">
+        <input type="checkbox" id="prodEnOferta" style="width:20px;height:20px;accent-color:#e67e22;">
+        <span style="font-weight:600;color:#e67e22;">🏷️ En Oferta</span>
+    </label>
+    <small style="color:#b2bec3;font-size:0.7rem;">(Aparecerá en la sección de ofertas)</small>
+</div>
+
+
+
+
+                    <!-- ===== SECCIÓN DE IMÁGENES ===== -->
+                    <div class="form-group">
+                        <div class="imagenes-container">
+                            <div class="imagenes-grid" id="imagenesGrid">
+                              
+                            </div>
+                            <div class="upload-area" id="uploadArea">
+                                <input type="file" id="fileInput" accept="image/*" multiple style="display:none;">
+                                <button type="button" class="btn-upload" onclick="document.getElementById('fileInput').click()">
+                                    <i class="fas fa-cloud-upload-alt"></i>
+                                    <span>Subir imágenes</span>
+                                </button>
+                                <small class="help-text">Formatos: JPG, PNG, WEBP. Máximo 5MB</small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <input type="hidden" id="prodId">
+                    <input type="hidden" id="productoIdActual">
+                </form>
+            </div>
+            <!-- BOTONES FUERA DEL FORMULARIO -->
+            <div class="modal-footer">
+                <button class="btn-cancel" onclick="cerrarModal('modalProducto')">Cancelar</button>
+                <button class="btn-primary" onclick="guardarProducto()">
+                    <i class="fas fa-save"></i> Guardar Producto
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== MODAL: Nueva Categoría ===== -->
+    <div class="modal" id="modalNuevaCategoria">
+        <div class="modal-content modal-small">
+            <div class="modal-header">
+                <h3><i class="fas fa-tag"></i> Nueva Categoría</h3>
+                <button class="modal-close" onclick="cerrarModal('modalNuevaCategoria')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>Nombre de la categoría <span class="required">*</span></label>
+                    <input type="text" id="nuevaCategoriaNombre" placeholder="Ej: Camisas">
+                </div>
+                <div class="form-group">
+                    <label>Descripción (opcional)</label>
+                    <input type="text" id="nuevaCategoriaDescripcion" placeholder="Ej: Camisas de vestir">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-cancel" onclick="cerrarModal('modalNuevaCategoria')">Cancelar</button>
+                <button class="btn-primary" onclick="guardarNuevaCategoria()">
+                    <i class="fas fa-save"></i> Guardar
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== MODAL: Nueva Marca ===== -->
+    <div class="modal" id="modalNuevaMarca">
+        <div class="modal-content modal-small">
+            <div class="modal-header">
+                <h3><i class="fas fa-trademark"></i> Nueva Marca</h3>
+                <button class="modal-close" onclick="cerrarModal('modalNuevaMarca')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>Nombre de la marca <span class="required">*</span></label>
+                    <input type="text" id="nuevaMarcaNombre" placeholder="Ej: Nike">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-cancel" onclick="cerrarModal('modalNuevaMarca')">Cancelar</button>
+                <button class="btn-primary" onclick="guardarNuevaMarca()">
+                    <i class="fas fa-save"></i> Guardar
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== TOAST ===== -->
+    <div class="toast" id="toast"></div>
+
+    <script src="src/js/admin.js"></script>
+</body>
+</html>
