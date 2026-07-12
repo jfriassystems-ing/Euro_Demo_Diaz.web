@@ -14,8 +14,6 @@ const requiredEnv = ['DB_URL', 'JWT_SECRET'];
 const missingEnv = requiredEnv.filter(env => !process.env[env]);
 if (missingEnv.length > 0) {
     console.error(`❌ Variables de entorno faltantes: ${missingEnv.join(', ')}`);
-    process.exit(1);
-}
 
 const app = express();
 const PORT = process.env.PORT || 5000;

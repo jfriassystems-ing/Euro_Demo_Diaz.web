@@ -29,4 +29,7 @@
   "overrides": {
     "cloudinary": "^2.10.0"
   }
+
+  
 }
+
