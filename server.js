@@ -7,6 +7,7 @@ const dotenv = require('dotenv');
 const path = require('path');
 const rateLimit = require('express-rate-limit');
 
+// ===== CONFIGURACIÓN DE ENTORNO =====
 dotenv.config();
 
 console.log('🔍 Variables de entorno:');
@@ -14,17 +15,14 @@ console.log('  DB_URL:', process.env.DB_URL ? '✅ DEFINIDA' : '❌ FALTA');
 console.log('  JWT_SECRET:', process.env.JWT_SECRET ? '✅ DEFINIDA' : '❌ FALTA');
 console.log('  NODE_ENV:', process.env.NODE_ENV || 'development');
 
-const requiredEnv = ['DB_URL', 'JWT_SECRET'];
-const missingEnv = requiredEnv.filter(env => !process.env[env]);
-if (missingEnv.length > 0) {
-    console.error(`❌ Variables de entorno faltantes: ${missingEnv.join(', ')}`);
-}
-
+// ===== BASE DE DATOS =====
 const pool = require('./src/config/database');
 
+// ===== EXPRESS =====
 const app = express();
 const PORT = process.env.PORT || 5000;
 
+// ===== MIDDLEWARE =====
 app.use(helmet({ contentSecurityPolicy: false, crossOriginEmbedderPolicy: false }));
 app.use(compression());
 app.use(morgan('combined'));
@@ -46,8 +44,10 @@ app.use('/api/', limiter);
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
+// ===== ARCHIVOS ESTÁTICOS =====
 app.use(express.static(path.join(__dirname)));
 
+// ===== RUTAS =====
 const authRoutes = require('./routes/authRoutes');
 const productoRoutes = require('./routes/productoRoutes');
 const categoriaRoutes = require('./routes/categoriaRoutes');
@@ -64,6 +64,7 @@ app.use('/api/pedidos', pedidoRoutes);
 app.use('/api/marcas', marcaRoutes);
 app.use('/api/imagenes', imagenRoutes);
 
+// ===== FRONTEND =====
 app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'index.html'));
 });
@@ -98,6 +99,7 @@ app.get('/api/auth/test', (req, res) => {
     res.json({ success: true, message: '✅ Ruta de autenticación funcionando' });
 });
 
+// ===== MANEJO DE ERRORES =====
 app.use((err, req, res, next) => {
     console.error('❌ Error no manejado:', err);
     res.status(500).json({
@@ -110,6 +112,7 @@ app.use((req, res) => {
     res.status(404).json({ success: false, message: 'Ruta no encontrada' });
 });
 
+// ===== INICIAR SERVIDOR =====
 app.listen(PORT, () => {
     console.log('═'.repeat(50));
     console.log('🚀 EUROMODADIAZ BACKEND');
