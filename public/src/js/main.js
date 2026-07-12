@@ -1,5 +1,5 @@
 // ===== CONFIGURACIÓN =====
-const API_URL = 'https://euro-demo-diaz-web.vercel.app/api';
+const API_URL = '/api';
 
 // ===== ESTADO =====
 let productos = [];

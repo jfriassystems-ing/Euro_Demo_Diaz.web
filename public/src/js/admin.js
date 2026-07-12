@@ -3,7 +3,7 @@
 // ============================================
 
 // ===== CONFIGURACIÓN =====
-const API_URL = 'https://euro-demo-diaz-web.vercel.app/api';
+const API_URL = '/api';
 let token = localStorage.getItem('adminToken');
 let pedidos = [];
 let productos = [];
