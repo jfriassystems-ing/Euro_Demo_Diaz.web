@@ -6,14 +6,21 @@ const morgan = require('morgan');
 const dotenv = require('dotenv');
 const path = require('path');
 const rateLimit = require('express-rate-limit');
-const pool = require('./src/config/database');
 
 dotenv.config();
+
+console.log('🔍 Variables de entorno:');
+console.log('  DB_URL:', process.env.DB_URL ? '✅ DEFINIDA' : '❌ FALTA');
+console.log('  JWT_SECRET:', process.env.JWT_SECRET ? '✅ DEFINIDA' : '❌ FALTA');
+console.log('  NODE_ENV:', process.env.NODE_ENV || 'development');
 
 const requiredEnv = ['DB_URL', 'JWT_SECRET'];
 const missingEnv = requiredEnv.filter(env => !process.env[env]);
 if (missingEnv.length > 0) {
     console.error(`❌ Variables de entorno faltantes: ${missingEnv.join(', ')}`);
+}
+
+const pool = require('./src/config/database');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -39,10 +46,8 @@ app.use('/api/', limiter);
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
-// ===== SERVIR ARCHIVOS ESTÁTICOS DESDE LA RAÍZ =====
 app.use(express.static(path.join(__dirname)));
 
-// ===== RUTAS (CORREGIDAS) =====
 const authRoutes = require('./routes/authRoutes');
 const productoRoutes = require('./routes/productoRoutes');
 const categoriaRoutes = require('./routes/categoriaRoutes');
@@ -59,7 +64,6 @@ app.use('/api/pedidos', pedidoRoutes);
 app.use('/api/marcas', marcaRoutes);
 app.use('/api/imagenes', imagenRoutes);
 
-// ===== FRONTEND =====
 app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'index.html'));
 });
@@ -94,7 +98,6 @@ app.get('/api/auth/test', (req, res) => {
     res.json({ success: true, message: '✅ Ruta de autenticación funcionando' });
 });
 
-// ===== MANEJO DE ERRORES =====
 app.use((err, req, res, next) => {
     console.error('❌ Error no manejado:', err);
     res.status(500).json({
@@ -118,3 +121,5 @@ app.listen(PORT, () => {
     console.log(`📡 API: http://localhost:${PORT}/api`);
     console.log('═'.repeat(50));
 });
+
+module.exports = app;
