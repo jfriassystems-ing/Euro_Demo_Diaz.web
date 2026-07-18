@@ -488,14 +488,13 @@ if (menuCategorias) {
 }
 
 // ============================================================
-// MODAL DETALLE PRODUCTO
+// MODAL DETALLE PRODUCTO (CORREGIDO)
 // ============================================================
 
 async function abrirModalProducto(productoId) {
     const modal = document.getElementById('modalProductoDetalle');
     const body = document.getElementById('modalProductoBody');
     
-    // Mostrar loading
     body.innerHTML = `
         <div class="modal-producto-loading">
             <i class="fas fa-spinner fa-spin"></i>
@@ -506,7 +505,6 @@ async function abrirModalProducto(productoId) {
     document.body.style.overflow = 'hidden';
 
     try {
-        // Obtener datos del producto
         const response = await fetch(`${API_URL}/productos/${productoId}`);
         const data = await response.json();
         
@@ -522,11 +520,24 @@ async function abrirModalProducto(productoId) {
 
         const p = data.data;
         
-        // Construir HTML del modal
+        // ===== OBTENER LA IMAGEN =====
+        let imagenUrl = null;
+        
+        // 1. Intentar con imagen_principal (por si acaso)
+        if (p.imagen_principal) {
+            imagenUrl = p.imagen_principal;
+        }
+        // 2. Si no, usar la primera de la lista de imágenes (ESTA ES LA QUE FUNCIONA)
+        else if (p.imagenes && p.imagenes.length > 0) {
+            imagenUrl = p.imagenes[0].url;
+        }
+        
+        // ===== CONSTRUIR HTML =====
         body.innerHTML = `
             <div class="modal-producto-imagen">
-                ${p.imagen_principal 
-                    ? `<img src="${p.imagen_principal}" alt="${p.nombre}">`
+                ${imagenUrl 
+                    ? `<img src="${imagenUrl}" alt="${p.nombre}" 
+                         onerror="this.style.display='none';this.parentElement.innerHTML='<div style=display:flex;align-items:center;justify-content:center;height:100%;color:#b2bec3;font-size:3rem;><i class=fas fa-image></i></div>'">`
                     : `<div style="display:flex;align-items:center;justify-content:center;height:100%;color:#b2bec3;font-size:3rem;">
                         <i class="fas fa-image"></i>
                       </div>`
@@ -563,7 +574,6 @@ async function abrirModalProducto(productoId) {
         `;
     }
 }
-
 // ===== CERRAR MODAL =====
 function cerrarModalProducto() {
     const modal = document.getElementById('modalProductoDetalle');
