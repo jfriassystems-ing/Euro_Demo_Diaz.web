@@ -40,7 +40,7 @@
                     <a href="index.html" class="btn-back">
                         <i class="fas fa-store"></i> Tienda
                     </a>
-                    <button class="btn-logout" id="logoutBtn">
+                    <button class="btn-logout" data-action="logout">
                         <i class="fas fa-sign-out-alt"></i>
                     </button>
                 </div>
@@ -96,7 +96,7 @@
             <!-- Tab: Pedidos -->
             <div class="tab-content active" id="tabPedidos">
                 <div class="admin-actions">
-                    <button class="btn-refresh" onclick="cargarPedidos()">
+                    <button class="btn-refresh" data-action="cargarPedidos">
                         <i class="fas fa-sync"></i> Actualizar
                     </button>
                 </div>
@@ -127,10 +127,10 @@
             <!-- Tab: Productos -->
             <div class="tab-content" id="tabProductos">
                 <div class="admin-actions">
-                    <button class="btn-primary" onclick="abrirModalProducto()" style="padding:10px 24px;border-radius:10px;">
+                    <button class="btn-primary" data-action="abrirModalProducto" style="padding:10px 24px;border-radius:10px;">
                         <i class="fas fa-plus"></i> Nuevo Producto
                     </button>
-                    <button class="btn-refresh" onclick="cargarProductosAdmin()">
+                    <button class="btn-refresh" data-action="cargarProductosAdmin">
                         <i class="fas fa-sync"></i> Actualizar
                     </button>
                 </div>
@@ -146,7 +146,7 @@
         <div class="modal-content modal-estado">
             <div class="modal-header">
                 <h3><i class="fas fa-truck"></i> Cambiar Estado del Pedido</h3>
-                <button class="modal-close" onclick="cerrarModal('modalEstado')">&times;</button>
+                <button class="modal-close" data-modal="modalEstado">&times;</button>
             </div>
             <div class="modal-body">
                 <div class="estado-card-cliente">
@@ -188,8 +188,8 @@
                 </div>
             </div>
             <div class="modal-footer">
-                <button class="btn-cancel" onclick="cerrarModal('modalEstado')">Cancelar</button>
-                <button class="btn-primary" onclick="actualizarEstado()">
+                <button class="btn-cancel" data-modal="modalEstado">Cancelar</button>
+                <button class="btn-primary" data-action="actualizarEstado">
                     <i class="fas fa-check"></i> Actualizar Estado
                 </button>
             </div>
@@ -201,7 +201,7 @@
         <div class="modal-content modal-lg">
             <div class="modal-header">
                 <h3 id="modalProductoTitulo">Nuevo Producto</h3>
-                <button class="modal-close" onclick="cerrarModal('modalProducto')">&times;</button>
+                <button class="modal-close" data-modal="modalProducto">&times;</button>
             </div>
             <div class="modal-body">
                 <form id="productoForm">
@@ -225,10 +225,10 @@
                                 <select id="prodCategoria">
                                     <option value="">Seleccionar categoría</option>
                                 </select>
-                                <button type="button" class="btn-add-option" onclick="abrirModalNuevaCategoria()" title="Nueva categoría">
+                                <button type="button" class="btn-add-option" data-action="abrirModalNuevaCategoria" title="Nueva categoría">
                                     <i class="fas fa-plus"></i>
                                 </button>
-                                <button type="button" class="btn-delete-option" onclick="eliminarCategoria()" title="Eliminar categoría">
+                                <button type="button" class="btn-delete-option" data-action="eliminarCategoria" title="Eliminar categoría">
                                     <i class="fas fa-trash"></i>
                                 </button>
                             </div>
@@ -239,10 +239,10 @@
                                 <select id="prodMarca">
                                     <option value="">Seleccionar marca</option>
                                 </select>
-                                <button type="button" class="btn-add-option" onclick="abrirModalNuevaMarca()" title="Nueva marca">
+                                <button type="button" class="btn-add-option" data-action="abrirModalNuevaMarca" title="Nueva marca">
                                     <i class="fas fa-plus"></i>
                                 </button>
-                                <button type="button" class="btn-delete-option" onclick="eliminarMarca()" title="Eliminar marca">
+                                <button type="button" class="btn-delete-option" data-action="eliminarMarca" title="Eliminar marca">
                                     <i class="fas fa-trash"></i>
                                 </button>
                             </div>
@@ -260,7 +260,7 @@
                         <label>SKU (código único)</label>
                         <div class="sku-group">
                             <input type="text" id="prodSku" placeholder="Se genera automáticamente">
-                            <button type="button" class="btn-generate-sku" onclick="generarSKU()" title="Generar SKU">
+                            <button type="button" class="btn-generate-sku" data-action="generarSKU" title="Generar SKU">
                                 <i class="fas fa-sync"></i>
                             </button>
                         </div>
@@ -273,30 +273,25 @@
                             <input type="checkbox" id="prodAgotado" style="width:20px;height:20px;accent-color:#e74c3c;">
                             <span style="font-weight:600;color:#e74c3c;">📦 Producto Agotado</span>
                         </label>
-                        
                     </div>
                      
                     <!-- ===== ✅ EN OFERTA (NUEVO) ===== -->
-<div class="form-group" style="display:flex;align-items:center;gap:12px;padding:8px 0;border-top:1px solid #f1f2f6;margin-top:8px;">
-    <label style="margin:0;display:flex;align-items:center;gap:8px;cursor:pointer;">
-        <input type="checkbox" id="prodEnOferta" style="width:20px;height:20px;accent-color:#e67e22;">
-        <span style="font-weight:600;color:#e67e22;">🏷️ En Oferta</span>
-    </label>
-    <small style="color:#b2bec3;font-size:0.7rem;">(Aparecerá en la sección de ofertas)</small>
-</div>
-
-
-
+                    <div class="form-group" style="display:flex;align-items:center;gap:12px;padding:8px 0;border-top:1px solid #f1f2f6;margin-top:8px;">
+                        <label style="margin:0;display:flex;align-items:center;gap:8px;cursor:pointer;">
+                            <input type="checkbox" id="prodEnOferta" style="width:20px;height:20px;accent-color:#e67e22;">
+                            <span style="font-weight:600;color:#e67e22;">🏷️ En Oferta</span>
+                        </label>
+                        <small style="color:#b2bec3;font-size:0.7rem;">(Aparecerá en la sección de ofertas)</small>
+                    </div>
 
                     <!-- ===== SECCIÓN DE IMÁGENES ===== -->
                     <div class="form-group">
                         <div class="imagenes-container">
                             <div class="imagenes-grid" id="imagenesGrid">
-                              
                             </div>
                             <div class="upload-area" id="uploadArea">
                                 <input type="file" id="fileInput" accept="image/*" multiple style="display:none;">
-                                <button type="button" class="btn-upload" onclick="document.getElementById('fileInput').click()">
+                                <button type="button" class="btn-upload" data-action="subirImagen">
                                     <i class="fas fa-cloud-upload-alt"></i>
                                     <span>Subir imágenes</span>
                                 </button>
@@ -311,8 +306,8 @@
             </div>
             <!-- BOTONES FUERA DEL FORMULARIO -->
             <div class="modal-footer">
-                <button class="btn-cancel" onclick="cerrarModal('modalProducto')">Cancelar</button>
-                <button class="btn-primary" onclick="guardarProducto()">
+                <button class="btn-cancel" data-modal="modalProducto">Cancelar</button>
+                <button class="btn-primary" data-action="guardarProducto">
                     <i class="fas fa-save"></i> Guardar Producto
                 </button>
             </div>
@@ -324,7 +319,7 @@
         <div class="modal-content modal-small">
             <div class="modal-header">
                 <h3><i class="fas fa-tag"></i> Nueva Categoría</h3>
-                <button class="modal-close" onclick="cerrarModal('modalNuevaCategoria')">&times;</button>
+                <button class="modal-close" data-modal="modalNuevaCategoria">&times;</button>
             </div>
             <div class="modal-body">
                 <div class="form-group">
@@ -337,8 +332,8 @@
                 </div>
             </div>
             <div class="modal-footer">
-                <button class="btn-cancel" onclick="cerrarModal('modalNuevaCategoria')">Cancelar</button>
-                <button class="btn-primary" onclick="guardarNuevaCategoria()">
+                <button class="btn-cancel" data-modal="modalNuevaCategoria">Cancelar</button>
+                <button class="btn-primary" data-action="guardarNuevaCategoria">
                     <i class="fas fa-save"></i> Guardar
                 </button>
             </div>
@@ -350,7 +345,7 @@
         <div class="modal-content modal-small">
             <div class="modal-header">
                 <h3><i class="fas fa-trademark"></i> Nueva Marca</h3>
-                <button class="modal-close" onclick="cerrarModal('modalNuevaMarca')">&times;</button>
+                <button class="modal-close" data-modal="modalNuevaMarca">&times;</button>
             </div>
             <div class="modal-body">
                 <div class="form-group">
@@ -359,8 +354,8 @@
                 </div>
             </div>
             <div class="modal-footer">
-                <button class="btn-cancel" onclick="cerrarModal('modalNuevaMarca')">Cancelar</button>
-                <button class="btn-primary" onclick="guardarNuevaMarca()">
+                <button class="btn-cancel" data-modal="modalNuevaMarca">Cancelar</button>
+                <button class="btn-primary" data-action="guardarNuevaMarca">
                     <i class="fas fa-save"></i> Guardar
                 </button>
             </div>

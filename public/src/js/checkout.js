@@ -1,5 +1,9 @@
+// ============================================================
+// EUROMODADIAZ - checkout.js (VERSIÓN SEGURA - SIN ONCLICK)
+// ============================================================
+
 // ===== CONFIGURACIÓN =====
-const API_URL = '/api';
+const API_URL = 'https://euro-demo-diaz-web.vercel.app/api';
 
 // ===== DOM REFS =====
 const checkoutItems = document.getElementById('checkoutItems');
@@ -10,9 +14,10 @@ const submitBtn = document.getElementById('submitBtn');
 // ===== CARRITO =====
 let carrito = JSON.parse(localStorage.getItem('carrito')) || [];
 
-// ===== FUNCIONES =====
+// ============================================================
+// RENDERIZAR CHECKOUT
+// ============================================================
 
-// Renderizar items del carrito en checkout
 function renderizarCheckout() {
     if (carrito.length === 0) {
         checkoutItems.innerHTML = `
@@ -50,7 +55,10 @@ function renderizarCheckout() {
     checkoutTotal.textContent = `RD$ ${total.toFixed(2)}`;
 }
 
-// Enviar pedido
+// ============================================================
+// ENVIAR PEDIDO
+// ============================================================
+
 async function enviarPedido(data) {
     try {
         submitBtn.disabled = true;
@@ -118,7 +126,10 @@ async function enviarPedido(data) {
     }
 }
 
-// Mostrar mensaje de éxito
+// ============================================================
+// MOSTRAR ÉXITO
+// ============================================================
+
 function mostrarExito(pedido) {
     const container = document.querySelector('.checkout-container');
     container.innerHTML = `
@@ -134,51 +145,8 @@ function mostrarExito(pedido) {
     `;
 }
 
-// ===== EVENTOS =====
-
-checkoutForm.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    
-    // Validar que el carrito no esté vacío
-    if (carrito.length === 0) {
-        alert('❌ Tu carrito está vacío. Agrega productos antes de finalizar.');
-        return;
-    }
-
-    // Validar campos
-    const nombre = document.getElementById('nombre').value.trim();
-    const telefono = document.getElementById('telefono').value.trim();
-    const direccion = document.getElementById('direccion').value.trim();
-    const ciudad = document.getElementById('ciudad').value;
-    const metodo_pago = document.getElementById('metodo_pago').value;
-
-    if (!nombre || !telefono || !direccion || !ciudad || !metodo_pago) {
-        alert('⚠️ Por favor, completa todos los campos obligatorios (*)');
-        return;
-    }
-
-    const data = {
-        nombre,
-        telefono,
-        email: document.getElementById('email').value.trim(),
-        direccion,
-        referencia: document.getElementById('referencia').value.trim(),
-        ciudad,
-        metodo_pago,
-        notas: document.getElementById('notas').value.trim()
-    };
-
-    await enviarPedido(data);
-});
-
-// ===== INICIALIZAR =====
-renderizarCheckout();
-
-console.log('🛒 EUROMODADIAZ - Checkout');
-console.log('📦 Items en carrito:', carrito.length);
-
 // ============================================================
-// UBICACIÓN DEL CLIENTE
+// UBICACIÓN DEL CLIENTE (VERSIÓN GLOBAL - SIN ONCLICK)
 // ============================================================
 
 let ubicacionCliente = {
@@ -187,7 +155,7 @@ let ubicacionCliente = {
     direccion: ''
 };
 
-function obtenerUbicacionCliente() {
+window.obtenerUbicacionCliente = function() {
     const btn = document.querySelector('.btn-ubicacion');
     const input = document.getElementById('direccion');
     const info = document.getElementById('ubicacionInfo') || crearInfoUbicacion();
@@ -289,7 +257,7 @@ function obtenerUbicacionCliente() {
             maximumAge: 0
         }
     );
-}
+};
 
 function crearInfoUbicacion() {
     const container = document.querySelector('.direccion-group');
@@ -313,3 +281,64 @@ function abrirGoogleMaps() {
         }
     }
 }
+
+// ============================================================
+// EVENTOS DEL FORMULARIO
+// ============================================================
+
+checkoutForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    
+    // Validar que el carrito no esté vacío
+    if (carrito.length === 0) {
+        alert('❌ Tu carrito está vacío. Agrega productos antes de finalizar.');
+        return;
+    }
+
+    // Validar campos
+    const nombre = document.getElementById('nombre').value.trim();
+    const telefono = document.getElementById('telefono').value.trim();
+    const direccion = document.getElementById('direccion').value.trim();
+    const ciudad = document.getElementById('ciudad').value;
+    const metodo_pago = document.getElementById('metodo_pago').value;
+
+    if (!nombre || !telefono || !direccion || !ciudad || !metodo_pago) {
+        alert('⚠️ Por favor, completa todos los campos obligatorios (*)');
+        return;
+    }
+
+    const data = {
+        nombre,
+        telefono,
+        email: document.getElementById('email').value.trim(),
+        direccion,
+        referencia: document.getElementById('referencia').value.trim(),
+        ciudad,
+        metodo_pago,
+        notas: document.getElementById('notas').value.trim()
+    };
+
+    await enviarPedido(data);
+});
+
+// ============================================================
+// EVENTO PARA BOTÓN DE UBICACIÓN (SIN ONCLICK - SEGURO)
+// ============================================================
+
+document.addEventListener('click', function(e) {
+    const btn = e.target.closest('.btn-ubicacion');
+    if (!btn) return;
+    if (btn.dataset.action !== 'ubicacion') return;
+    
+    e.preventDefault();
+    window.obtenerUbicacionCliente();
+});
+
+// ============================================================
+// INICIALIZAR
+// ============================================================
+
+renderizarCheckout();
+
+console.log('🛒 EUROMODADIAZ - Checkout');
+console.log('📦 Items en carrito:', carrito.length);

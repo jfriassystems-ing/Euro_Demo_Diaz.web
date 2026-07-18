@@ -1,5 +1,9 @@
+// ============================================================
+// EUROMODADIAZ - main.js (VERSIÓN SEGURA - SIN ONCLICK)
+// ============================================================
+
 // ===== CONFIGURACIÓN =====
-const API_URL = '/api';
+const API_URL = 'https://euro-demo-diaz-web.vercel.app/api';
 
 // ===== ESTADO =====
 let productos = [];
@@ -40,7 +44,7 @@ async function cargarProductos() {
     }
 }
 
-// Renderizar productos
+// Renderizar productos (SIN ONCLICK - usa data-id)
 function renderizarProductos(productos) {
     if (productos.length === 0) {
         productsGrid.innerHTML = '<p class="empty">No hay productos disponibles</p>';
@@ -74,7 +78,7 @@ function renderizarProductos(productos) {
                         <i class="fas fa-times"></i> Agotado
                     </button>
                 ` : `
-                    <button class="btn-add-cart" onclick="agregarAlCarrito(${producto.id})">
+                    <button class="btn-add-cart" data-id="${producto.id}">
                         <i class="fas fa-cart-plus"></i> Agregar
                     </button>
                 `}
@@ -83,7 +87,7 @@ function renderizarProductos(productos) {
     `).join('');
 }
 
-// ===== CARGAR OFERTAS =====
+// ===== CARGAR OFERTAS (SIN ONCLICK - usa data-id) =====
 async function cargarOfertas() {
     try {
         const ofertasGrid = document.getElementById('ofertasGrid');
@@ -120,7 +124,7 @@ async function cargarOfertas() {
                         <h3 class="product-name">${producto.nombre}</h3>
                         <p class="product-category">${producto.categoria || 'Sin categoría'}</p>
                         <p class="product-price">RD$ ${Number(producto.precio).toFixed(2)}</p>
-                        <button class="btn-add-cart" onclick="agregarAlCarrito(${producto.id})">
+                        <button class="btn-add-cart" data-id="${producto.id}">
                             <i class="fas fa-cart-plus"></i> Agregar
                         </button>
                     </div>
@@ -137,10 +141,10 @@ async function cargarOfertas() {
 }
 
 // ============================================================
-// CARRITO
+// CARRITO - AGREGAR PRODUCTO (VERSIÓN GLOBAL)
 // ============================================================
 
-function agregarAlCarrito(productoId) {
+window.agregarAlCarrito = function(productoId) {
     const producto = productos.find(p => p.id === productoId);
     if (!producto) return;
 
@@ -160,7 +164,7 @@ function agregarAlCarrito(productoId) {
 
     actualizarCarrito();
     abrirCarrito();
-}
+};
 
 function eliminarDelCarrito(productoId) {
     carrito = carrito.filter(item => item.id !== productoId);
@@ -441,6 +445,20 @@ document.addEventListener('DOMContentLoaded', function() {
     setupBottomNav();
     setupCategoryCards();
     addTodosButton();
+    
+    // ===== NUEVO: Event listener para botones "Agregar" (seguro, sin onclick) =====
+    document.addEventListener('click', function(e) {
+        const btn = e.target.closest('.btn-add-cart');
+        if (!btn) return;
+        if (btn.disabled) return;
+        
+        const productoId = parseInt(btn.dataset.id);
+        if (!productoId) return;
+        
+        e.preventDefault();
+        agregarAlCarrito(productoId);
+    });
+    
     console.log('✅ EUROMODADIAZ - Listo!');
 });
 
