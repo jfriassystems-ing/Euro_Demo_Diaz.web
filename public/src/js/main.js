@@ -52,7 +52,7 @@ function renderizarProductos(productos) {
     }
 
     productsGrid.innerHTML = productos.map(producto => `
-        <div class="product-card" data-id="${producto.id}">
+        <div class="product-card" data-id="${producto.id}" onclick="abrirModalProducto(${producto.id})">
             <div class="product-image">
                 ${producto.imagen_principal 
                     ? `<img src="${producto.imagen_principal}" alt="${producto.nombre}" loading="lazy">`
@@ -78,7 +78,7 @@ function renderizarProductos(productos) {
                         <i class="fas fa-times"></i> Agotado
                     </button>
                 ` : `
-                    <button class="btn-add-cart" data-id="${producto.id}">
+                    <button class="btn-add-cart" onclick="event.stopPropagation(); agregarAlCarrito(${producto.id})">
                         <i class="fas fa-cart-plus"></i> Agregar
                     </button>
                 `}
@@ -110,26 +110,26 @@ async function cargarOfertas() {
             }
             
             ofertasGrid.innerHTML = data.data.map(producto => `
-                <div class="product-card" data-id="${producto.id}">
-                    <div class="product-image">
-                        ${producto.imagen_principal 
-                            ? `<img src="${producto.imagen_principal}" alt="${producto.nombre}" loading="lazy">`
-                            : `<div class="no-image"><i class="fas fa-image"></i></div>`
-                        }
-                        <div class="sello-oferta">
-                            <span>🔥 OFERTA</span>
-                        </div>
-                    </div>
-                    <div class="product-info">
-                        <h3 class="product-name">${producto.nombre}</h3>
-                        <p class="product-category">${producto.categoria || 'Sin categoría'}</p>
-                        <p class="product-price">RD$ ${Number(producto.precio).toFixed(2)}</p>
-                        <button class="btn-add-cart" data-id="${producto.id}">
-                            <i class="fas fa-cart-plus"></i> Agregar
-                        </button>
-                    </div>
-                </div>
-            `).join('');
+    <div class="product-card" data-id="${producto.id}" onclick="abrirModalProducto(${producto.id})">
+        <div class="product-image">
+            ${producto.imagen_principal 
+                ? `<img src="${producto.imagen_principal}" alt="${producto.nombre}" loading="lazy">`
+                : `<div class="no-image"><i class="fas fa-image"></i></div>`
+            }
+            <div class="sello-oferta">
+                <span>🔥 OFERTA</span>
+            </div>
+        </div>
+        <div class="product-info">
+            <h3 class="product-name">${producto.nombre}</h3>
+            <p class="product-category">${producto.categoria || 'Sin categoría'}</p>
+            <p class="product-price">RD$ ${Number(producto.precio).toFixed(2)}</p>
+            <button class="btn-add-cart" onclick="event.stopPropagation(); agregarAlCarrito(${producto.id})">
+                <i class="fas fa-cart-plus"></i> Agregar
+            </button>
+        </div>
+    </div>
+`).join('');
         }
     } catch (error) {
         console.error('Error cargando ofertas:', error);
@@ -486,6 +486,113 @@ if (menuCategorias) {
         this.classList.add('active');
     });
 }
+
+// ============================================================
+// MODAL DETALLE PRODUCTO
+// ============================================================
+
+async function abrirModalProducto(productoId) {
+    const modal = document.getElementById('modalProductoDetalle');
+    const body = document.getElementById('modalProductoBody');
+    
+    // Mostrar loading
+    body.innerHTML = `
+        <div class="modal-producto-loading">
+            <i class="fas fa-spinner fa-spin"></i>
+            Cargando producto...
+        </div>
+    `;
+    modal.classList.add('active');
+    document.body.style.overflow = 'hidden';
+
+    try {
+        // Obtener datos del producto
+        const response = await fetch(`${API_URL}/productos/${productoId}`);
+        const data = await response.json();
+        
+        if (!data.success) {
+            body.innerHTML = `
+                <div class="modal-producto-loading" style="color:#e74c3c;">
+                    <i class="fas fa-exclamation-circle"></i>
+                    Producto no encontrado
+                </div>
+            `;
+            return;
+        }
+
+        const p = data.data;
+        
+        // Construir HTML del modal
+        body.innerHTML = `
+            <div class="modal-producto-imagen">
+                ${p.imagen_principal 
+                    ? `<img src="${p.imagen_principal}" alt="${p.nombre}">`
+                    : `<div style="display:flex;align-items:center;justify-content:center;height:100%;color:#b2bec3;font-size:3rem;">
+                        <i class="fas fa-image"></i>
+                      </div>`
+                }
+            </div>
+            <div class="modal-producto-info">
+                <h2 class="modal-producto-nombre">${p.nombre}</h2>
+                <p class="modal-producto-categoria">${p.categoria || 'Sin categoría'}</p>
+                <p class="modal-producto-precio">RD$ ${Number(p.precio).toFixed(2)}</p>
+                ${p.descripcion ? `<p class="modal-producto-descripcion">${p.descripcion}</p>` : ''}
+                ${p.marca ? `<p class="modal-producto-marca"><strong>Marca:</strong> ${p.marca}</p>` : ''}
+                <div class="modal-producto-stock ${p.agotado ? 'agotado' : 'disponible'}">
+                    ${p.agotado ? '❌ Agotado' : '✅ Disponible'}
+                </div>
+                ${p.agotado ? `
+                    <button class="modal-producto-btn" disabled>
+                        <i class="fas fa-times"></i> Agotado
+                    </button>
+                ` : `
+                    <button class="modal-producto-btn" onclick="agregarDesdeModal(${p.id})">
+                        <i class="fas fa-cart-plus"></i> Agregar al Carrito
+                    </button>
+                `}
+            </div>
+        `;
+        
+    } catch (error) {
+        console.error('Error:', error);
+        body.innerHTML = `
+            <div class="modal-producto-loading" style="color:#e74c3c;">
+                <i class="fas fa-exclamation-circle"></i>
+                Error al cargar el producto
+            </div>
+        `;
+    }
+}
+
+// ===== CERRAR MODAL =====
+function cerrarModalProducto() {
+    const modal = document.getElementById('modalProductoDetalle');
+    modal.classList.remove('active');
+    document.body.style.overflow = 'auto';
+}
+
+// ===== AGREGAR DESDE MODAL =====
+function agregarDesdeModal(productoId) {
+    agregarAlCarrito(productoId);
+    cerrarModalProducto();
+}
+
+// ===== EVENTOS DEL MODAL =====
+document.addEventListener('DOMContentLoaded', function() {
+    // ... tu código existente ...
+    
+    // Cerrar modal con overlay
+    document.getElementById('modalProductoOverlay').addEventListener('click', cerrarModalProducto);
+    
+    // Cerrar modal con botón X
+    document.getElementById('modalProductoClose').addEventListener('click', cerrarModalProducto);
+    
+    // Cerrar con tecla ESC
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') cerrarModalProducto();
+    });
+});
+
 
 const menuProductos = document.querySelector('.bottom-nav-items a[data-section="productos"]');
 if (menuProductos) {
