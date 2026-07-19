@@ -196,45 +196,44 @@ button {
    HERO - SOLO IMAGEN
    ============================================================ */
 .hero {
-    width: 100%;
-    aspect-ratio: 1792 / 592;
-    max-height: 592px;
-    background: #f8f9fa;
-    overflow: hidden;
-    position: relative;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    width: 100%; /* Ocupa todo el ancho del contenedor padre */
+    aspect-ratio: 1792 / 592; /* Mantiene la proporción exacta de la imagen (1792x592) */
+    max-height: 592px; /* Altura máxima que puede alcanzar el hero */
+    background: #f8f9fa; /* Color de fondo mientras carga la imagen (gris claro) */
+    overflow: hidden; /* Oculta cualquier contenido que se salga del área del hero */
+    position: relative; /* Permite posicionar elementos hijos de forma absoluta dentro del hero */
+    display: flex; /* Activa el modelo de caja flexible para centrar elementos internos */
+    align-items: center; /* Centra los elementos hijos verticalmente en el hero */
+    justify-content: center; /* Centra los elementos hijos horizontalmente en el hero */
 }
 
 .hero-image {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    object-position: center;
-    display: block;
+    width: 100%; /* La imagen ocupa todo el ancho del hero */
+    height: 100%; /* La imagen ocupa toda la altura del hero */
+    object-fit: cover; /* Recorta la imagen para cubrir todo el espacio sin deformarse */
+    object-position: center; /* La imagen se recorta desde el centro (no desde los bordes) */
+    display: block; /* Elimina el espacio extra que dejan las imágenes inline */
 }
 
-/* Responsive */
+/* ===== RESPONSIVE ===== */
 @media (max-width: 768px) {
     .hero {
-        aspect-ratio: 1792 / 592;
-        max-height: 320px;
+        aspect-ratio: 1792 / 592; /* Mantiene la proporción exacta en tablet */
+        max-height: 320px; /* Reduce la altura máxima a 320px para no ocupar demasiado espacio */
     }
 }
 
 @media (max-width: 480px) {
     .hero {
-        max-height: 200px;
+        max-height: 200px; /* Reduce aún más la altura máxima para móviles */
     }
 }
 
 @media (min-width: 1800px) {
     .hero {
-        max-height: 592px;
+        max-height: 592px; /* En pantallas muy grandes, limita la altura a 592px */
     }
 }
-
 
 /* ============================================================
    SECCIÓN TÍTULO
