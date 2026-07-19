@@ -2578,3 +2578,178 @@
         font-size: 0.8rem;
     }
 }
+
+
+
+/* ============================================================
+   DETALLE DE PEDIDO - TABLA MEJORADA
+   ============================================================ */
+
+/* Contenedor de la tabla */
+.detalle-productos {
+    margin-top: 10px;
+}
+
+.detalle-productos h4 {
+    font-size: 1rem;
+    font-weight: 700;
+    color: #2d3436;
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.detalle-productos-table-container {
+    overflow-x: auto;
+    border-radius: 12px;
+    border: 1px solid #f1f2f6;
+}
+
+/* Tabla */
+.detalle-productos-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.9rem;
+    background: white;
+}
+
+.detalle-productos-table thead {
+    background: #f8f9fa;
+}
+
+.detalle-productos-table th {
+    padding: 12px 16px;
+    text-align: left;
+    font-weight: 700;
+    color: #2d3436;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border-bottom: 2px solid #e8e9ed;
+}
+
+.detalle-productos-table td {
+    padding: 12px 16px;
+    border-bottom: 1px solid #f1f2f6;
+    color: #2d3436;
+}
+
+.detalle-productos-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+.detalle-productos-table tbody tr:hover {
+    background: #fafafa;
+}
+
+/* Estilo para el nombre del producto */
+.detalle-productos-table td:first-child {
+    font-weight: 600;
+    color: #2d3436;
+}
+
+/* Estilo para cantidades */
+.detalle-productos-table td:nth-child(2) {
+    text-align: center;
+    font-weight: 600;
+}
+
+/* Estilo para precios */
+.detalle-productos-table td:nth-child(3),
+.detalle-productos-table td:nth-child(4) {
+    font-weight: 500;
+    color: #e74c3c;
+}
+
+/* Total */
+.detalle-total {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 20px;
+    padding: 16px 20px 0;
+    margin-top: 16px;
+    border-top: 2px solid #e8e9ed;
+    font-size: 1.1rem;
+}
+
+.detalle-total span:first-child {
+    font-weight: 600;
+    color: #2d3436;
+}
+
+.detalle-total span:last-child {
+    font-weight: 700;
+    font-size: 1.2rem;
+    color: #e74c3c;
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 640px) {
+    .detalle-productos-table th,
+    .detalle-productos-table td {
+        padding: 8px 10px;
+        font-size: 0.75rem;
+    }
+
+    .detalle-productos-table td:first-child {
+        font-size: 0.75rem;
+    }
+
+    .detalle-total {
+        font-size: 0.95rem;
+        padding: 12px 14px 0;
+    }
+
+    .detalle-total span:last-child {
+        font-size: 1rem;
+    }
+
+    /* Ocultar columna de subtotal en móvil si es necesario */
+    .detalle-productos-table th:nth-child(4),
+    .detalle-productos-table td:nth-child(4) {
+        display: none;
+    }
+}
+
+/* ===== ESTILO MEJORADO PARA EL MODAL ===== */
+#modalDetallePedido .modal-content {
+    max-width: 700px;
+}
+
+#modalDetallePedido .modal-header {
+    background: linear-gradient(135deg, #1a1a2e 0%, #2d3436 100%);
+    padding: 18px 24px;
+}
+
+#modalDetallePedido .modal-header h3 {
+    color: white;
+    font-size: 1.1rem;
+    font-weight: 700;
+}
+
+#modalDetallePedido .modal-header h3 i {
+    color: #e74c3c;
+    margin-right: 8px;
+}
+
+#modalDetallePedido .modal-close {
+    color: rgba(255,255,255,0.5);
+}
+
+#modalDetallePedido .modal-close:hover {
+    color: white;
+    background: rgba(255,255,255,0.1);
+}
+
+#modalDetallePedido .modal-body {
+    padding: 24px;
+    background: #f8f9fa;
+}
+
+#modalDetallePedido .modal-footer {
+    background: white;
+    border-top: 1px solid #f1f2f6;
+    padding: 14px 24px;
+}
