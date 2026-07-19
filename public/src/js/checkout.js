@@ -136,7 +136,7 @@ function mostrarExito(pedido) {
         <div class="success-message" style="grid-column:1/-1;background:white;border-radius:16px;padding:40px;text-align:center;box-shadow:0 4px 20px rgba(0,0,0,0.04);">
             <i class="fas fa-check-circle" style="font-size:4rem;color:#27ae60;margin-bottom:16px;"></i>
             <h2>¡Pedido Realizado con Éxito!</h2>
-            <p style="color:#b2bec3;margin-bottom:8px;">Tu pedido #${pedido?.id || 'N/A'} ha sido registrado.</p>
+            <p style="color:#b2bec3;margin-bottom:8px;">Tu pedido 'N/A'} ha sido registrado.</p>
             <p style="color:#b2bec3;margin-bottom:20px;">Nos comunicaremos contigo para confirmar la entrega.</p>
             <a href="index.html" class="btn-primary" style="display:inline-block;">
                 <i class="fas fa-arrow-left"></i> Volver a la tienda
