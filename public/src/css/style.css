@@ -1709,29 +1709,40 @@ button {
    BOTÓN DE UBICACIÓN
    ============================================================ */
 
+.social-links a {
+    width: 48px;
+    height: 48px;
+    background: #f1f2f6;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    color: #2d3436;
+    transition: all 0.3s;
+    text-decoration: none;
+}
+
+.social-links a:hover {
+    background: #e74c3c;
+    color: white;
+    transform: translateY(-3px);
+}
+
 .social-links a .fa-location-dot {
     color: #4285F4;
     transition: color 0.3s;
 }
 
 .social-links a:hover .fa-location-dot {
-    color: #e74c3c;
+    color: white;
 }
 
-.social-links a[style*="color:#4285F4"] {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 2px;
-}
-
-.social-links a[style*="color:#4285F4"] span {
-    font-size: 0.5rem;
-    font-weight: 500;
-    color: #4285F4;
-    transition: color 0.3s;
-}
-
-.social-links a[style*="color:#4285F4"]:hover span {
-    color: #e74c3c;
+/* ===== RESPONSIVE ===== */
+@media (max-width: 640px) {
+    .social-links a {
+        width: 42px;
+        height: 42px;
+        font-size: 1rem;
+    }
 }
