@@ -896,6 +896,43 @@ function setupTabs() {
     });
 }
 
+
+function setupTabs() {
+    const tabs = document.querySelectorAll('.tab-btn');
+    tabs.forEach(tab => {
+        tab.addEventListener('click', function() {
+            tabs.forEach(t => t.classList.remove('active'));
+            this.classList.add('active');
+            
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+            
+            const tabId = this.dataset.tab;
+            document.getElementById('tab' + tabId.charAt(0).toUpperCase() + tabId.slice(1)).classList.add('active');
+            
+            if (tabId === 'pedidos') {
+                cargarPedidos();
+            } else if (tabId === 'productos') {
+                cargarProductosAdmin();
+                cargarCategorias();
+                cargarMarcas();
+            } else if (tabId === 'categorias') {
+                cargarCategoriasAdmin();
+            }
+        });
+    });
+}
+
+
+
+
+
+
+
+
+
+
+
+
 // ============================================================
 // GENERAR SKU
 // ============================================================
@@ -1028,3 +1065,170 @@ document.addEventListener('DOMContentLoaded', function() {
     
     console.log('✅ Admin listo');
 });
+
+
+
+
+
+
+
+
+
+// ============================================================
+// CATEGORÍAS ADMIN
+// ============================================================
+
+async function cargarCategoriasAdmin() {
+    try {
+        const grid = document.getElementById('categoriasAdminGrid');
+        grid.innerHTML = '<div class="loading">Cargando categorías...</div>';
+        
+        const response = await fetch(`${API_URL}/categorias`, {
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
+        const data = await response.json();
+        
+        if (data.success) {
+            renderizarCategoriasAdmin(data.data);
+        } else {
+            grid.innerHTML = '<p class="error">Error al cargar categorías</p>';
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        document.getElementById('categoriasAdminGrid').innerHTML = '<p class="error">Error al cargar categorías</p>';
+    }
+}
+
+function renderizarCategoriasAdmin(categorias) {
+    const grid = document.getElementById('categoriasAdminGrid');
+    
+    if (!categorias || categorias.length === 0) {
+        grid.innerHTML = `<div class="empty">No hay categorías creadas</div>`;
+        return;
+    }
+    
+    grid.innerHTML = categorias.map(cat => {
+        // Asegurar que total_productos exista
+        const total = cat.total_productos !== undefined ? cat.total_productos : 0;
+        
+        return `
+        <div class="categoria-admin-card">
+            <div class="info">
+                <div class="nombre">${cat.nombre}</div>
+                ${cat.descripcion ? `<div class="descripcion">${cat.descripcion}</div>` : ''}
+                <div class="total-productos">
+                    <i class="fas fa-box"></i> ${total} productos
+                </div>
+            </div>
+            <div class="acciones">
+                <button class="btn-action btn-action-edit" onclick="abrirModalEditarCategoria(${cat.id}, '${cat.nombre}', '${cat.descripcion || ''}')">
+                    <i class="fas fa-edit"></i>
+                </button>
+                <button class="btn-action btn-action-delete" onclick="eliminarCategoriaAdmin(${cat.id})">
+                    <i class="fas fa-trash"></i>
+                </button>
+            </div>
+        </div>
+    `}).join('');
+}
+function abrirModalCategoria() {
+    document.getElementById('nuevaCategoriaNombre').value = '';
+    document.getElementById('nuevaCategoriaDescripcion').value = '';
+    document.getElementById('modalNuevaCategoria').classList.add('active');
+}
+
+async function guardarNuevaCategoria() {
+    const nombre = document.getElementById('nuevaCategoriaNombre').value.trim();
+    const descripcion = document.getElementById('nuevaCategoriaDescripcion').value.trim();
+    
+    if (!nombre) {
+        mostrarToast('⚠️ El nombre es requerido', 'error');
+        return;
+    }
+    
+    try {
+        const response = await fetch(`${API_URL}/categorias`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify({ nombre, descripcion })
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+            mostrarToast('✅ Categoría creada', 'success');
+            cerrarModal('modalNuevaCategoria');
+            cargarCategoriasAdmin();
+        } else {
+            mostrarToast('❌ ' + data.message, 'error');
+        }
+    } catch (error) {
+        mostrarToast('❌ Error al crear', 'error');
+    }
+}
+
+function abrirModalEditarCategoria(id, nombre, descripcion) {
+    document.getElementById('editCategoriaId').value = id;
+    document.getElementById('editCategoriaNombre').value = nombre;
+    document.getElementById('editCategoriaDescripcion').value = descripcion;
+    document.getElementById('modalEditarCategoria').classList.add('active');
+}
+
+async function guardarEditarCategoria() {
+    const id = document.getElementById('editCategoriaId').value;
+    const nombre = document.getElementById('editCategoriaNombre').value.trim();
+    const descripcion = document.getElementById('editCategoriaDescripcion').value.trim();
+    
+    if (!nombre) {
+        mostrarToast('⚠️ El nombre es requerido', 'error');
+        return;
+    }
+    
+    try {
+        const response = await fetch(`${API_URL}/categorias/${id}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify({ nombre, descripcion })
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+            mostrarToast('✅ Categoría actualizada', 'success');
+            cerrarModal('modalEditarCategoria');
+            cargarCategoriasAdmin();
+        } else {
+            mostrarToast('❌ ' + data.message, 'error');
+        }
+    } catch (error) {
+        mostrarToast('❌ Error al actualizar', 'error');
+    }
+}
+
+async function eliminarCategoriaAdmin(id) {
+    if (!confirm('¿Eliminar esta categoría?')) return;
+    
+    try {
+        const response = await fetch(`${API_URL}/categorias/${id}`, {
+            method: 'DELETE',
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+            mostrarToast('✅ Categoría eliminada', 'success');
+            cargarCategoriasAdmin();
+        } else {
+            mostrarToast('❌ ' + data.message, 'error');
+        }
+    } catch (error) {
+        mostrarToast('❌ Error al eliminar', 'error');
+    }
+}
