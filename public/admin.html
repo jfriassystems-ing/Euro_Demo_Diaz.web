@@ -127,6 +127,76 @@
                 </div>
             </div>
 
+            <!-- ===== MODAL: Detalle del Pedido ===== -->
+            <div class="modal" id="modalDetallePedido">
+                <div class="modal-content modal-lg">
+                    <div class="modal-header">
+                        <h3><i class="fas fa-receipt"></i> Detalle del Pedido #<span id="detallePedidoId">-</span></h3>
+                        <button class="modal-close" onclick="cerrarModal('modalDetallePedido')">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <!-- Información del cliente -->
+                        <div class="detalle-cliente-info">
+                            <div class="detalle-cliente-item">
+                                <i class="fas fa-user"></i>
+                                <span id="detalleClienteNombre">-</span>
+                            </div>
+                            <div class="detalle-cliente-item">
+                                <i class="fas fa-phone"></i>
+                                <span id="detalleClienteTelefono">-</span>
+                            </div>
+                            <div class="detalle-cliente-item">
+                                <i class="fas fa-map-pin"></i>
+                                <span id="detalleClienteDireccion">-</span>
+                            </div>
+                            <div class="detalle-cliente-item">
+                                <i class="fas fa-city"></i>
+                                <span id="detalleClienteCiudad">-</span>
+                            </div>
+                            <div class="detalle-cliente-item">
+                                <i class="fas fa-envelope"></i>
+                                <span id="detalleClienteEmail">-</span>
+                            </div>
+                            <div class="detalle-cliente-item">
+                                <i class="fas fa-money-bill"></i>
+                                <span id="detalleMetodoPago">-</span>
+                            </div>
+                        </div>
+
+                        <!-- Tabla de productos -->
+                        <div class="detalle-productos">
+                            <h4>🛍️ Productos</h4>
+                            <div class="detalle-productos-table-container">
+                                <table class="detalle-productos-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Producto</th>
+                                            <th>Cantidad</th>
+                                            <th>Precio Unit.</th>
+                                            <th>Subtotal</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="detalleProductosBody">
+                                        <tr>
+                                            <td colspan="4" style="text-align:center;padding:20px;color:#b2bec3;">
+                                                <i class="fas fa-spinner fa-spin"></i> Cargando productos...
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="detalle-total">
+                                <span>Total:</span>
+                                <span id="detalleTotal">RD$ 0.00</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn-cancel" onclick="cerrarModal('modalDetallePedido')">Cerrar</button>
+                    </div>
+                </div>
+            </div>
+
             <!-- Tab: Productos -->
             <div class="tab-content" id="tabProductos">
                 <div class="admin-actions">
@@ -142,43 +212,44 @@
                 </div>
             </div>
 
-           <!-- Tab: Categorías y Marcas -->
-<div class="tab-content" id="tabCategorias">
-    <div class="admin-actions">
-        <button class="btn-refresh" onclick="cargarCategoriasAdmin(); cargarMarcasAdmin();">
-            <i class="fas fa-sync"></i> Actualizar Todo
-        </button>
-    </div>
-    
-    <!-- DOS COLUMNAS: CATEGORÍAS | MARCAS -->
-    <div class="admin-dos-columnas">
-        <!-- COLUMNA IZQUIERDA: CATEGORÍAS -->
-        <div class="admin-columna">
-            <div class="admin-section-header">
-                <h3><i class="fas fa-tags"></i> Categorías</h3>
-                <button class="btn-primary" onclick="abrirModalCategoria()" style="padding:6px 16px;border-radius:8px;font-size:0.75rem;">
-                    <i class="fas fa-plus"></i> Nueva
-                </button>
-            </div>
-            <div class="categorias-grid-admin" id="categoriasAdminGrid">
-                <div class="loading">Cargando categorías...</div>
-            </div>
-        </div>
+            <!-- Tab: Categorías y Marcas -->
+            <div class="tab-content" id="tabCategorias">
+                <div class="admin-actions">
+                    <button class="btn-refresh" onclick="cargarCategoriasAdmin(); cargarMarcasAdmin();">
+                        <i class="fas fa-sync"></i> Actualizar Todo
+                    </button>
+                </div>
+                
+                <!-- DOS COLUMNAS: CATEGORÍAS | MARCAS -->
+                <div class="admin-dos-columnas">
+                    <!-- COLUMNA IZQUIERDA: CATEGORÍAS -->
+                    <div class="admin-columna">
+                        <div class="admin-section-header">
+                            <h3><i class="fas fa-tags"></i> Categorías</h3>
+                            <button class="btn-primary" onclick="abrirModalCategoria()" style="padding:6px 16px;border-radius:8px;font-size:0.75rem;">
+                                <i class="fas fa-plus"></i> Nueva
+                            </button>
+                        </div>
+                        <div class="categorias-grid-admin" id="categoriasAdminGrid">
+                            <div class="loading">Cargando categorías...</div>
+                        </div>
+                    </div>
 
-        <!-- COLUMNA DERECHA: MARCAS -->
-        <div class="admin-columna">
-            <div class="admin-section-header">
-                <h3><i class="fas fa-trademark"></i> Marcas</h3>
-                <button class="btn-primary" onclick="abrirModalMarca()" style="padding:6px 16px;border-radius:8px;font-size:0.75rem;">
-                    <i class="fas fa-plus"></i> Nueva
-                </button>
-            </div>
-            <div class="marcas-grid-admin" id="marcasAdminGrid">
-                <div class="loading">Cargando marcas...</div>
+                    <!-- COLUMNA DERECHA: MARCAS -->
+                    <div class="admin-columna">
+                        <div class="admin-section-header">
+                            <h3><i class="fas fa-trademark"></i> Marcas</h3>
+                            <button class="btn-primary" onclick="abrirModalMarca()" style="padding:6px 16px;border-radius:8px;font-size:0.75rem;">
+                                <i class="fas fa-plus"></i> Nueva
+                            </button>
+                        </div>
+                        <div class="marcas-grid-admin" id="marcasAdminGrid">
+                            <div class="loading">Cargando marcas...</div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
-    </div>
-</div>
     </section>
 
     <!-- ===== MODAL: Cambiar estado ===== -->

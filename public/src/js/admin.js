@@ -277,6 +277,9 @@ function renderizarPedidos(pedidos) {
                 <button class="btn-action btn-action-edit" data-action="abrirModalEstado" data-id="${p.id}">
                     <i class="fas fa-edit"></i>
                 </button>
+                <button class="btn-action btn-action-view" data-action="verDetallePedido" data-id="${p.id}" style="background:#ebf5fb;color:#2980b9;padding:4px 10px;border:none;border-radius:6px;font-size:0.7rem;font-weight:600;cursor:pointer;">
+                    <i class="fas fa-eye"></i>
+                </button>
             </td>
         </tr>
     `).join('');

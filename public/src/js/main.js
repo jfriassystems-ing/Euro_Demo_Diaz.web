@@ -268,6 +268,28 @@ async function filtrarPorCategoria(categoria) {
     try {
         productsGrid.innerHTML = '<div class="loading">Cargando...</div>';
         
+        // Si es "Ofertas", usar la ruta de ofertas
+        if (categoria === 'Ofertas' || categoria === 'ofertas') {
+            const response = await fetch(`${API_URL}/productos/ofertas`);
+            const data = await response.json();
+            
+            if (data.success) {
+                renderizarProductos(data.data);
+                setTimeout(() => scrollToProductos(), 100);
+            } else {
+                productsGrid.innerHTML = '<p class="error">Error al cargar ofertas</p>';
+            }
+            return;
+        }
+        
+        // Si es "Todos", mostrar todos los productos
+        if (categoria === 'Todos' || categoria === 'todos') {
+            cargarProductos();
+            setTimeout(() => scrollToProductos(), 100);
+            return;
+        }
+        
+        // Para otras categorías, usar la API normal
         const responseCats = await fetch(`${API_URL}/categorias`);
         const dataCats = await responseCats.json();
         
