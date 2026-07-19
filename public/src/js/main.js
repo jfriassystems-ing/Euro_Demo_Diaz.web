@@ -441,6 +441,8 @@ document.addEventListener('DOMContentLoaded', function() {
     console.log('🚀 EUROMODADIAZ - Inicializando...');
     cargarProductos();
     cargarOfertas();
+    cargarCategoriasFrontend();  // ← AGREGAR
+    cargarMarcasFrontend();      // ← AGREGAR
     actualizarCarrito();
     setupBottomNav();
     setupCategoryCards();
@@ -711,4 +713,74 @@ async function cargarCategoriasFrontend() {
         console.error('Error al cargar categorías:', error);
         document.getElementById('categoriesGrid').innerHTML = '<p class="error">Error al cargar categorías</p>';
     }
+}
+
+
+
+
+
+// ============================================================
+// CARGAR MARCAS DESDE LA API
+// ============================================================
+
+async function cargarMarcasFrontend() {
+    try {
+        const grid = document.getElementById('marcasGrid');
+        if (!grid) {
+            console.warn('⚠️ No se encontró #marcasGrid');
+            return;
+        }
+        
+        grid.innerHTML = '<div class="loading-marcas">Cargando marcas...</div>';
+        
+        const response = await fetch(`${API_URL}/marcas`);
+        const data = await response.json();
+        
+        console.log('🏷️ Marcas recibidas:', data);
+        
+        if (data.success && data.data && data.data.length > 0) {
+            grid.innerHTML = data.data.map(marca => `
+                <div class="marca-card" data-marca="${marca.nombre}" onclick="filtrarPorMarca('${marca.nombre}')">
+                    <span class="marca-name">${marca.nombre}</span>
+                </div>
+            `).join('');
+        } else {
+            grid.innerHTML = '<span class="loading-marcas">No hay marcas disponibles</span>';
+        }
+    } catch (error) {
+        console.error('❌ Error en cargarMarcasFrontend:', error);
+        document.getElementById('marcasGrid').innerHTML = '<p class="error">Error al cargar marcas</p>';
+    }
+}
+
+
+
+
+
+
+
+// ============================================================
+// FILTRAR POR MARCA
+// ============================================================
+
+function filtrarPorMarca(marca) {
+    console.log('🔍 Filtrando por marca:', marca);
+    
+    // Limpiar selección de categorías
+    document.querySelectorAll('.category-card').forEach(c => c.classList.remove('active'));
+    
+    // Marcar la marca seleccionada
+    document.querySelectorAll('.marca-card').forEach(m => {
+        m.classList.toggle('active', m.textContent === marca);
+    });
+    
+    const productosFiltrados = productos.filter(p => p.marca === marca);
+    
+    if (productosFiltrados.length === 0) {
+        productsGrid.innerHTML = `<p class="empty">No hay productos de la marca "${marca}"</p>`;
+        return;
+    }
+    
+    renderizarProductos(productosFiltrados);
+    setTimeout(() => scrollToProductos(), 100);
 }

@@ -1629,3 +1629,78 @@ button {
         font-size: 0.85rem;
     }
 }
+
+
+
+
+
+
+
+
+/* ============================================================
+   MARCAS - FILTRO
+   ============================================================ */
+
+.marca-card {
+    background: #f8f9fa;
+    padding: 10px 20px;
+    border-radius: 30px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border: 2px solid transparent;
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: #636e72;
+    display: inline-block;
+}
+
+.marca-card:hover {
+    background: #eef0f2;
+    transform: translateY(-2px);
+}
+
+.marca-card.active {
+    background: #e74c3c;
+    color: white;
+    border-color: #e74c3c;
+    box-shadow: 0 4px 15px rgba(231, 76, 60, 0.25);
+}
+
+.marca-card.active .marca-name {
+    color: white;
+}
+
+.marca-name {
+    font-size: 0.75rem;
+    font-weight: 500;
+    margin: 0;
+    letter-spacing: 0.3px;
+}
+
+.loading-marcas {
+    text-align: center;
+    color: #b2bec3;
+    padding: 15px 0;
+    font-size: 0.85rem;
+    width: 100%;
+}
+
+.marcas-grid {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
+}
+
+@media (max-width: 640px) {
+    .marca-card {
+        padding: 8px 14px;
+        font-size: 0.7rem;
+    }
+    .marca-name {
+        font-size: 0.65rem;
+    }
+    .marcas-grid {
+        gap: 6px;
+    }
+}
