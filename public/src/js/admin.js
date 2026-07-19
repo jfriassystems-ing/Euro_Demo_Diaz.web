@@ -1398,13 +1398,18 @@ async function eliminarMarcaAdmin(id) {
 
 
 // ============================================================
-// VER DETALLE DE PEDIDO
+// VER DETALLE DE PEDIDO (CON ENLACES A MAPS Y WHATSAPP)
 // ============================================================
 
 window.verDetallePedido = async function(pedidoId) {
     try {
         // Mostrar modal
-        document.getElementById('modalDetallePedido').classList.add('active');
+        const modal = document.getElementById('modalDetallePedido');
+        if (!modal) {
+            console.error('❌ Modal no encontrado');
+            return;
+        }
+        modal.classList.add('active');
         document.getElementById('detallePedidoId').textContent = pedidoId;
         document.getElementById('detalleProductosBody').innerHTML = `
             <tr><td colspan="4" style="text-align:center;padding:20px;color:#b2bec3;">
@@ -1420,16 +1425,71 @@ window.verDetallePedido = async function(pedidoId) {
         if (data.success) {
             const pedido = data.data;
             
-            // Información del cliente
-            document.getElementById('detalleClienteNombre').textContent = pedido.cliente_nombre || '-';
-            document.getElementById('detalleClienteTelefono').textContent = pedido.cliente_telefono || '-';
-            document.getElementById('detalleClienteDireccion').textContent = pedido.cliente_direccion || '-';
-            document.getElementById('detalleClienteCiudad').textContent = pedido.cliente_ciudad || '-';
-            document.getElementById('detalleClienteEmail').textContent = pedido.cliente_email || '-';
-            document.getElementById('detalleMetodoPago').textContent = pedido.metodo_pago || '-';
+            // ===== INFORMACIÓN DEL CLIENTE =====
+            const nombre = pedido.cliente_nombre || '-';
+            const telefono = pedido.cliente_telefono || '-';
+            const direccion = pedido.cliente_direccion || '-';
+            const ciudad = pedido.cliente_ciudad || '-';
+            const email = pedido.cliente_email || '-';
+            const metodoPago = pedido.metodo_pago || '-';
+            
+            document.getElementById('detalleClienteNombre').textContent = nombre;
+            document.getElementById('detalleClienteCiudad').textContent = ciudad;
+            document.getElementById('detalleClienteEmail').textContent = email;
+            document.getElementById('detalleMetodoPago').textContent = metodoPago;
             document.getElementById('detalleTotal').textContent = `RD$ ${Number(pedido.total).toFixed(2)}`;
             
-            // Productos
+            // ===== TELÉFONO → WHATSAPP =====
+            const telefonoLink = document.getElementById('detalleClienteTelefonoLink');
+            const telefonoSpan = document.getElementById('detalleClienteTelefono');
+            
+            // Limpiar número (solo dígitos)
+            const telefonoLimpio = telefono.replace(/\D/g, '');
+            telefonoSpan.textContent = telefono;
+            
+            if (telefonoLimpio.length > 0) {
+                // Para República Dominicana (1 + 809/829/849)
+                let numeroWhatsApp = telefonoLimpio;
+                // Si tiene 10 dígitos y empieza con 8, agregar 1
+                if (numeroWhatsApp.length === 10 && numeroWhatsApp.startsWith('8')) {
+                    numeroWhatsApp = '1' + numeroWhatsApp;
+                }
+                // Si tiene 10 dígitos y empieza con 809/829/849
+                if (numeroWhatsApp.length === 10) {
+                    numeroWhatsApp = '1' + numeroWhatsApp;
+                }
+                telefonoLink.href = `https://wa.me/${numeroWhatsApp}?text=Hola!%20Me%20comunico%20por%20tu%20pedido%20%23${pedidoId}%20en%20EUROMODADIAZ.`;
+                telefonoLink.style.color = '#25D366';
+                telefonoLink.style.textDecoration = 'none';
+                telefonoLink.style.fontWeight = '500';
+                telefonoLink.title = 'Abrir en WhatsApp';
+            } else {
+                telefonoLink.href = '#';
+                telefonoLink.style.color = '#b2bec3';
+                telefonoLink.title = 'Número no disponible';
+            }
+            
+            // ===== DIRECCIÓN → GOOGLE MAPS =====
+            const direccionLink = document.getElementById('detalleClienteDireccionLink');
+            const direccionSpan = document.getElementById('detalleClienteDireccion');
+            
+            direccionSpan.textContent = direccion;
+            
+            if (direccion !== '-' && direccion.trim().length > 0) {
+                const direccionEncoded = encodeURIComponent(`${direccion}, ${ciudad}, República Dominicana`);
+                direccionLink.href = `https://www.google.com/maps/search/?api=1&query=${direccionEncoded}`;
+                direccionLink.style.color = '#4285F4';
+                direccionLink.style.textDecoration = 'none';
+                direccionLink.style.fontWeight = '500';
+                direccionLink.title = 'Abrir en Google Maps';
+                direccionLink.target = '_blank';
+            } else {
+                direccionLink.href = '#';
+                direccionLink.style.color = '#b2bec3';
+                direccionLink.title = 'Dirección no disponible';
+            }
+            
+            // ===== PRODUCTOS =====
             const detalles = pedido.detalles || [];
             const tbody = document.getElementById('detalleProductosBody');
             
@@ -1465,7 +1525,6 @@ window.verDetallePedido = async function(pedidoId) {
         `;
     }
 };
-
 
 
 
