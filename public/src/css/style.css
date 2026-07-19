@@ -193,45 +193,62 @@ button {
 }
 
 /* ============================================================
-   HERO - SOLO IMAGEN
+   HERO - IMAGEN QUE SE ESTIRA CON LA PANTALLA
    ============================================================ */
 .hero {
-    width: 100%; /* Ocupa todo el ancho del contenedor padre */
-    aspect-ratio: 1792 / 592; /* Mantiene la proporción exacta de la imagen (1792x592) */
-    max-height: 592px; /* Altura máxima que puede alcanzar el hero */
-    background: #f8f9fa; /* Color de fondo mientras carga la imagen (gris claro) */
-    overflow: hidden; /* Oculta cualquier contenido que se salga del área del hero */
-    position: relative; /* Permite posicionar elementos hijos de forma absoluta dentro del hero */
-    display: flex; /* Activa el modelo de caja flexible para centrar elementos internos */
-    align-items: center; /* Centra los elementos hijos verticalmente en el hero */
-    justify-content: center; /* Centra los elementos hijos horizontalmente en el hero */
+    width: 100%;
+    min-height: 300px; /* Altura mínima en móvil */
+    max-height: 80vh; /* Altura máxima = 80% de la pantalla */
+    
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .hero-image {
-    width: 100%; /* La imagen ocupa todo el ancho del hero */
-    height: 100%; /* La imagen ocupa toda la altura del hero */
-    object-fit: cover; /* Recorta la imagen para cubrir todo el espacio sin deformarse */
-    object-position: center; /* La imagen se recorta desde el centro (no desde los bordes) */
-    display: block; /* Elimina el espacio extra que dejan las imágenes inline */
+    width: 100%; /* Ocupa TODO el ancho */
+    height: 100%; /* Ocupa TODA la altura del hero */
+    min-height: 300px;
+    max-height: 80vh;
+    object-fit: cover; /* La imagen se estira para cubrir TODO sin deformarse */
+    object-position: center top; /* Se enfoca en la parte superior de la imagen */
+    display: block;
 }
 
 /* ===== RESPONSIVE ===== */
 @media (max-width: 768px) {
     .hero {
-        aspect-ratio: 1792 / 592; /* Mantiene la proporción exacta en tablet */
-        max-height: 320px; /* Reduce la altura máxima a 320px para no ocupar demasiado espacio */
+        min-height: 250px;
+        max-height: 50vh;
+    }
+    .hero-image {
+        min-height: 250px;
+        max-height: 50vh;
+        object-position: center; /* En móvil centra la imagen */
     }
 }
 
 @media (max-width: 480px) {
     .hero {
-        max-height: 200px; /* Reduce aún más la altura máxima para móviles */
+        min-height: 200px;
+        max-height: 40vh;
+    }
+    .hero-image {
+        min-height: 200px;
+        max-height: 40vh;
     }
 }
 
-@media (min-width: 1800px) {
+@media (min-width: 1400px) {
     .hero {
-        max-height: 592px; /* En pantallas muy grandes, limita la altura a 592px */
+        min-height: 500px;
+        max-height: 600px;
+    }
+    .hero-image {
+        min-height: 500px;
+        max-height: 600px;
     }
 }
 
