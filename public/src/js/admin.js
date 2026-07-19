@@ -1388,6 +1388,90 @@ async function eliminarMarcaAdmin(id) {
     }
 }
 
+
+
+
+
+
+
+
+
+
+// ============================================================
+// VER DETALLE DE PEDIDO
+// ============================================================
+
+window.verDetallePedido = async function(pedidoId) {
+    try {
+        // Mostrar modal
+        document.getElementById('modalDetallePedido').classList.add('active');
+        document.getElementById('detallePedidoId').textContent = pedidoId;
+        document.getElementById('detalleProductosBody').innerHTML = `
+            <tr><td colspan="4" style="text-align:center;padding:20px;color:#b2bec3;">
+                <i class="fas fa-spinner fa-spin"></i> Cargando productos...
+            </td></tr>
+        `;
+        
+        const response = await fetch(`${API_URL}/pedidos/${pedidoId}`, {
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
+        const data = await response.json();
+        
+        if (data.success) {
+            const pedido = data.data;
+            
+            // Información del cliente
+            document.getElementById('detalleClienteNombre').textContent = pedido.cliente_nombre || '-';
+            document.getElementById('detalleClienteTelefono').textContent = pedido.cliente_telefono || '-';
+            document.getElementById('detalleClienteDireccion').textContent = pedido.cliente_direccion || '-';
+            document.getElementById('detalleClienteCiudad').textContent = pedido.cliente_ciudad || '-';
+            document.getElementById('detalleClienteEmail').textContent = pedido.cliente_email || '-';
+            document.getElementById('detalleMetodoPago').textContent = pedido.metodo_pago || '-';
+            document.getElementById('detalleTotal').textContent = `RD$ ${Number(pedido.total).toFixed(2)}`;
+            
+            // Productos
+            const detalles = pedido.detalles || [];
+            const tbody = document.getElementById('detalleProductosBody');
+            
+            if (detalles.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="4" style="text-align:center;padding:20px;color:#b2bec3;">
+                    No hay productos en este pedido
+                </td></tr>`;
+                return;
+            }
+            
+            tbody.innerHTML = detalles.map(item => `
+                <tr>
+                    <td><strong>${item.producto_nombre}</strong></td>
+                    <td>${item.cantidad}</td>
+                    <td>RD$ ${Number(item.precio_unitario).toFixed(2)}</td>
+                    <td>RD$ ${Number(item.subtotal).toFixed(2)}</td>
+                </tr>
+            `).join('');
+            
+        } else {
+            document.getElementById('detalleProductosBody').innerHTML = `
+                <tr><td colspan="4" style="text-align:center;padding:20px;color:#e74c3c;">
+                    ❌ Error al cargar los productos
+                </td></tr>
+            `;
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        document.getElementById('detalleProductosBody').innerHTML = `
+            <tr><td colspan="4" style="text-align:center;padding:20px;color:#e74c3c;">
+                ❌ Error al cargar el pedido
+            </td></tr>
+        `;
+    }
+};
+
+
+
+
+
+
+
 // ============================================================
 // INICIALIZAR
 // ============================================================
