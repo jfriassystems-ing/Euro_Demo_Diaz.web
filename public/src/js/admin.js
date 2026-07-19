@@ -1021,6 +1021,12 @@ document.addEventListener('click', function(e) {
             const item = target.closest('.imagen-item');
             if (item) item.remove();
             break;
+        // ===== NUEVO CASE =====
+        case 'verDetallePedido':
+            const detalleId = parseInt(target.dataset.id);
+            if (detalleId) verDetallePedido(detalleId);
+            break;
+        // ===== FIN NUEVO CASE =====
         default:
             console.warn('Acción no reconocida:', action);
     }
