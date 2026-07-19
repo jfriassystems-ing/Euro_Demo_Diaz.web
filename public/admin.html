@@ -40,7 +40,7 @@
                     <a href="index.html" class="btn-back">
                         <i class="fas fa-store"></i> Tienda
                     </a>
-                    <button class="btn-logout" data-action="logout">
+                    <button class="btn-logout" id="logoutBtn">
                         <i class="fas fa-sign-out-alt"></i>
                     </button>
                 </div>
@@ -92,15 +92,14 @@
                     <i class="fas fa-box"></i> Productos
                 </button>
                 <button class="tab-btn" data-tab="categorias">
-                    <i class="fas fa-tags"></i> Categorías
+                    <i class="fas fa-tags"></i> Categorías y Marcas
                 </button>
-
             </div>
 
             <!-- Tab: Pedidos -->
             <div class="tab-content active" id="tabPedidos">
                 <div class="admin-actions">
-                    <button class="btn-refresh" data-action="cargarPedidos">
+                    <button class="btn-refresh" onclick="cargarPedidos()">
                         <i class="fas fa-sync"></i> Actualizar
                     </button>
                 </div>
@@ -131,10 +130,10 @@
             <!-- Tab: Productos -->
             <div class="tab-content" id="tabProductos">
                 <div class="admin-actions">
-                    <button class="btn-primary" data-action="abrirModalProducto" style="padding:10px 24px;border-radius:10px;">
+                    <button class="btn-primary" onclick="abrirModalProducto()" style="padding:10px 24px;border-radius:10px;">
                         <i class="fas fa-plus"></i> Nuevo Producto
                     </button>
-                    <button class="btn-refresh" data-action="cargarProductosAdmin">
+                    <button class="btn-refresh" onclick="cargarProductosAdmin()">
                         <i class="fas fa-sync"></i> Actualizar
                     </button>
                 </div>
@@ -142,70 +141,52 @@
                     <div class="loading">Cargando productos...</div>
                 </div>
             </div>
-        </div>
-    </section>
 
-
-
-          <!-- Tab: Categorías -->
+           <!-- Tab: Categorías y Marcas -->
 <div class="tab-content" id="tabCategorias">
     <div class="admin-actions">
-        <button class="btn-primary" onclick="abrirModalCategoria()" style="padding:10px 24px;border-radius:10px;">
-            <i class="fas fa-plus"></i> Nueva Categoría
-        </button>
-        <button class="btn-refresh" onclick="cargarCategoriasAdmin()">
-            <i class="fas fa-sync"></i> Actualizar
+        <button class="btn-refresh" onclick="cargarCategoriasAdmin(); cargarMarcasAdmin();">
+            <i class="fas fa-sync"></i> Actualizar Todo
         </button>
     </div>
-    <div class="categorias-grid-admin" id="categoriasAdminGrid">
-        <div class="loading">Cargando categorías...</div>
-    </div>
-</div>
+    
+    <!-- DOS COLUMNAS: CATEGORÍAS | MARCAS -->
+    <div class="admin-dos-columnas">
+        <!-- COLUMNA IZQUIERDA: CATEGORÍAS -->
+        <div class="admin-columna">
+            <div class="admin-section-header">
+                <h3><i class="fas fa-tags"></i> Categorías</h3>
+                <button class="btn-primary" onclick="abrirModalCategoria()" style="padding:6px 16px;border-radius:8px;font-size:0.75rem;">
+                    <i class="fas fa-plus"></i> Nueva
+                </button>
+            </div>
+            <div class="categorias-grid-admin" id="categoriasAdminGrid">
+                <div class="loading">Cargando categorías...</div>
+            </div>
+        </div>
 
-<!-- ===== MODAL: Editar Categoría ===== -->
-<div class="modal" id="modalEditarCategoria">
-    <div class="modal-content modal-small">
-        <div class="modal-header">
-            <h3><i class="fas fa-edit"></i> Editar Categoría</h3>
-            <button class="modal-close" onclick="cerrarModal('modalEditarCategoria')">&times;</button>
-        </div>
-        <div class="modal-body">
-            <input type="hidden" id="editCategoriaId">
-            <div class="form-group">
-                <label>Nombre de la categoría <span class="required">*</span></label>
-                <input type="text" id="editCategoriaNombre" placeholder="Ej: Camisas">
+        <!-- COLUMNA DERECHA: MARCAS -->
+        <div class="admin-columna">
+            <div class="admin-section-header">
+                <h3><i class="fas fa-trademark"></i> Marcas</h3>
+                <button class="btn-primary" onclick="abrirModalMarca()" style="padding:6px 16px;border-radius:8px;font-size:0.75rem;">
+                    <i class="fas fa-plus"></i> Nueva
+                </button>
             </div>
-            <div class="form-group">
-                <label>Descripción (opcional)</label>
-                <input type="text" id="editCategoriaDescripcion" placeholder="Ej: Camisas de vestir">
+            <div class="marcas-grid-admin" id="marcasAdminGrid">
+                <div class="loading">Cargando marcas...</div>
             </div>
-        </div>
-        <div class="modal-footer">
-            <button class="btn-cancel" onclick="cerrarModal('modalEditarCategoria')">Cancelar</button>
-            <button class="btn-primary" onclick="guardarEditarCategoria()">
-                <i class="fas fa-save"></i> Actualizar
-            </button>
         </div>
     </div>
 </div>
-
-
-
-
-
-
-
-
-
-
-
+    </section>
 
     <!-- ===== MODAL: Cambiar estado ===== -->
     <div class="modal" id="modalEstado">
         <div class="modal-content modal-estado">
             <div class="modal-header">
                 <h3><i class="fas fa-truck"></i> Cambiar Estado del Pedido</h3>
-                <button class="modal-close" data-modal="modalEstado">&times;</button>
+                <button class="modal-close" onclick="cerrarModal('modalEstado')">&times;</button>
             </div>
             <div class="modal-body">
                 <div class="estado-card-cliente">
@@ -247,8 +228,8 @@
                 </div>
             </div>
             <div class="modal-footer">
-                <button class="btn-cancel" data-modal="modalEstado">Cancelar</button>
-                <button class="btn-primary" data-action="actualizarEstado">
+                <button class="btn-cancel" onclick="cerrarModal('modalEstado')">Cancelar</button>
+                <button class="btn-primary" onclick="actualizarEstado()">
                     <i class="fas fa-check"></i> Actualizar Estado
                 </button>
             </div>
@@ -260,7 +241,7 @@
         <div class="modal-content modal-lg">
             <div class="modal-header">
                 <h3 id="modalProductoTitulo">Nuevo Producto</h3>
-                <button class="modal-close" data-modal="modalProducto">&times;</button>
+                <button class="modal-close" onclick="cerrarModal('modalProducto')">&times;</button>
             </div>
             <div class="modal-body">
                 <form id="productoForm">
@@ -284,10 +265,10 @@
                                 <select id="prodCategoria">
                                     <option value="">Seleccionar categoría</option>
                                 </select>
-                                <button type="button" class="btn-add-option" data-action="abrirModalNuevaCategoria" title="Nueva categoría">
+                                <button type="button" class="btn-add-option" onclick="abrirModalNuevaCategoria()" title="Nueva categoría">
                                     <i class="fas fa-plus"></i>
                                 </button>
-                                <button type="button" class="btn-delete-option" data-action="eliminarCategoria" title="Eliminar categoría">
+                                <button type="button" class="btn-delete-option" onclick="eliminarCategoria()" title="Eliminar categoría">
                                     <i class="fas fa-trash"></i>
                                 </button>
                             </div>
@@ -298,10 +279,10 @@
                                 <select id="prodMarca">
                                     <option value="">Seleccionar marca</option>
                                 </select>
-                                <button type="button" class="btn-add-option" data-action="abrirModalNuevaMarca" title="Nueva marca">
+                                <button type="button" class="btn-add-option" onclick="abrirModalNuevaMarca()" title="Nueva marca">
                                     <i class="fas fa-plus"></i>
                                 </button>
-                                <button type="button" class="btn-delete-option" data-action="eliminarMarca" title="Eliminar marca">
+                                <button type="button" class="btn-delete-option" onclick="eliminarMarca()" title="Eliminar marca">
                                     <i class="fas fa-trash"></i>
                                 </button>
                             </div>
@@ -319,7 +300,7 @@
                         <label>SKU (código único)</label>
                         <div class="sku-group">
                             <input type="text" id="prodSku" placeholder="Se genera automáticamente">
-                            <button type="button" class="btn-generate-sku" data-action="generarSKU" title="Generar SKU">
+                            <button type="button" class="btn-generate-sku" onclick="generarSKU()" title="Generar SKU">
                                 <i class="fas fa-sync"></i>
                             </button>
                         </div>
@@ -332,8 +313,9 @@
                             <input type="checkbox" id="prodAgotado" style="width:20px;height:20px;accent-color:#e74c3c;">
                             <span style="font-weight:600;color:#e74c3c;">📦 Producto Agotado</span>
                         </label>
+                        <small style="color:#b2bec3;font-size:0.7rem;">(Oculta el producto en la tienda)</small>
                     </div>
-                     
+
                     <!-- ===== ✅ EN OFERTA (NUEVO) ===== -->
                     <div class="form-group" style="display:flex;align-items:center;gap:12px;padding:8px 0;border-top:1px solid #f1f2f6;margin-top:8px;">
                         <label style="margin:0;display:flex;align-items:center;gap:8px;cursor:pointer;">
@@ -350,7 +332,7 @@
                             </div>
                             <div class="upload-area" id="uploadArea">
                                 <input type="file" id="fileInput" accept="image/*" multiple style="display:none;">
-                                <button type="button" class="btn-upload" data-action="subirImagen">
+                                <button type="button" class="btn-upload" onclick="document.getElementById('fileInput').click()">
                                     <i class="fas fa-cloud-upload-alt"></i>
                                     <span>Subir imágenes</span>
                                 </button>
@@ -365,8 +347,8 @@
             </div>
             <!-- BOTONES FUERA DEL FORMULARIO -->
             <div class="modal-footer">
-                <button class="btn-cancel" data-modal="modalProducto">Cancelar</button>
-                <button class="btn-primary" data-action="guardarProducto">
+                <button class="btn-cancel" onclick="cerrarModal('modalProducto')">Cancelar</button>
+                <button class="btn-primary" onclick="guardarProducto()">
                     <i class="fas fa-save"></i> Guardar Producto
                 </button>
             </div>
@@ -378,7 +360,7 @@
         <div class="modal-content modal-small">
             <div class="modal-header">
                 <h3><i class="fas fa-tag"></i> Nueva Categoría</h3>
-                <button class="modal-close" data-modal="modalNuevaCategoria">&times;</button>
+                <button class="modal-close" onclick="cerrarModal('modalNuevaCategoria')">&times;</button>
             </div>
             <div class="modal-body">
                 <div class="form-group">
@@ -391,9 +373,36 @@
                 </div>
             </div>
             <div class="modal-footer">
-                <button class="btn-cancel" data-modal="modalNuevaCategoria">Cancelar</button>
-                <button class="btn-primary" data-action="guardarNuevaCategoria">
+                <button class="btn-cancel" onclick="cerrarModal('modalNuevaCategoria')">Cancelar</button>
+                <button class="btn-primary" onclick="guardarNuevaCategoria()">
                     <i class="fas fa-save"></i> Guardar
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== MODAL: Editar Categoría ===== -->
+    <div class="modal" id="modalEditarCategoria">
+        <div class="modal-content modal-small">
+            <div class="modal-header">
+                <h3><i class="fas fa-edit"></i> Editar Categoría</h3>
+                <button class="modal-close" onclick="cerrarModal('modalEditarCategoria')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="editCategoriaId">
+                <div class="form-group">
+                    <label>Nombre de la categoría <span class="required">*</span></label>
+                    <input type="text" id="editCategoriaNombre" placeholder="Ej: Camisas">
+                </div>
+                <div class="form-group">
+                    <label>Descripción (opcional)</label>
+                    <input type="text" id="editCategoriaDescripcion" placeholder="Ej: Camisas de vestir">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-cancel" onclick="cerrarModal('modalEditarCategoria')">Cancelar</button>
+                <button class="btn-primary" onclick="guardarEditarCategoria()">
+                    <i class="fas fa-save"></i> Actualizar
                 </button>
             </div>
         </div>
@@ -404,7 +413,7 @@
         <div class="modal-content modal-small">
             <div class="modal-header">
                 <h3><i class="fas fa-trademark"></i> Nueva Marca</h3>
-                <button class="modal-close" data-modal="modalNuevaMarca">&times;</button>
+                <button class="modal-close" onclick="cerrarModal('modalNuevaMarca')">&times;</button>
             </div>
             <div class="modal-body">
                 <div class="form-group">
@@ -413,9 +422,32 @@
                 </div>
             </div>
             <div class="modal-footer">
-                <button class="btn-cancel" data-modal="modalNuevaMarca">Cancelar</button>
-                <button class="btn-primary" data-action="guardarNuevaMarca">
+                <button class="btn-cancel" onclick="cerrarModal('modalNuevaMarca')">Cancelar</button>
+                <button class="btn-primary" onclick="guardarNuevaMarca()">
                     <i class="fas fa-save"></i> Guardar
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== MODAL: Editar Marca ===== -->
+    <div class="modal" id="modalEditarMarca">
+        <div class="modal-content modal-small">
+            <div class="modal-header">
+                <h3><i class="fas fa-edit"></i> Editar Marca</h3>
+                <button class="modal-close" onclick="cerrarModal('modalEditarMarca')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="editMarcaId">
+                <div class="form-group">
+                    <label>Nombre de la marca <span class="required">*</span></label>
+                    <input type="text" id="editMarcaNombre" placeholder="Ej: Nike">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-cancel" onclick="cerrarModal('modalEditarMarca')">Cancelar</button>
+                <button class="btn-primary" onclick="guardarEditarMarca()">
+                    <i class="fas fa-save"></i> Actualizar
                 </button>
             </div>
         </div>

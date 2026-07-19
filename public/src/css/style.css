@@ -1336,3 +1336,296 @@ button {
         color: white;
     }
 }
+
+/* ============================================================
+   CATEGORÍAS - NUEVO DISEÑO DELICADO
+   ============================================================ */
+
+.categorias-section {
+    padding: 40px 0 50px;
+    background: #fafafa;
+}
+
+.categorias-header {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.categorias-header .section-title {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: #2d3436;
+    margin-bottom: 4px;
+}
+
+.categorias-header .section-title span {
+    color: #e74c3c;
+}
+
+.categorias-header .section-subtitle {
+    color: #b2bec3;
+    font-size: 0.95rem;
+    font-weight: 300;
+    margin-top: 0;
+}
+
+.categorias-wrapper {
+    overflow: hidden;
+    padding: 4px;
+}
+
+.categorias-grid {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 12px;
+}
+
+/* ===== TARJETA DE CATEGORÍA ===== */
+.category-card {
+    background: white;
+    padding: 14px 24px;
+    border-radius: 50px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border: 2px solid transparent;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: #636e72;
+    min-width: 80px;
+    justify-content: center;
+}
+
+.category-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.08);
+    border-color: #f0f0f0;
+}
+
+.category-card.active {
+    background: #e74c3c;
+    color: white;
+    border-color: #e74c3c;
+    box-shadow: 0 8px 25px rgba(231, 76, 60, 0.25);
+}
+
+.category-card.active .category-icon {
+    color: white;
+}
+
+.category-icon {
+    font-size: 1rem;
+    color: #b2bec3;
+    transition: color 0.3s;
+}
+
+.category-card:hover .category-icon {
+    color: #e74c3c;
+}
+
+.category-card.active .category-icon {
+    color: white;
+}
+
+.category-name {
+    font-size: 0.8rem;
+    font-weight: 500;
+    margin: 0;
+    letter-spacing: 0.2px;
+}
+
+/* ===== LOADING ===== */
+.loading-categories {
+    text-align: center;
+    color: #b2bec3;
+    padding: 20px 0;
+    font-size: 0.9rem;
+    width: 100%;
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 640px) {
+    .categorias-grid {
+        gap: 8px;
+    }
+
+    .category-card {
+        padding: 10px 16px;
+        font-size: 0.75rem;
+        min-width: 60px;
+        border-radius: 30px;
+    }
+
+    .category-icon {
+        font-size: 0.85rem;
+    }
+
+    .category-name {
+        font-size: 0.7rem;
+    }
+
+    .categorias-header .section-title {
+        font-size: 1.4rem;
+    }
+
+    .categorias-header .section-subtitle {
+        font-size: 0.8rem;
+    }
+}
+
+@media (min-width: 768px) {
+    .categorias-grid {
+        gap: 16px;
+    }
+
+    .category-card {
+        padding: 16px 32px;
+        font-size: 0.9rem;
+        min-width: 100px;
+    }
+}
+
+
+
+
+
+
+
+
+
+/* ============================================================
+   MARCAS - FILTRO
+   ============================================================ */
+
+.marcas-section {
+    padding: 20px 0 40px;
+    background: #ffffff;
+}
+
+.marcas-header {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.marcas-title {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: #2d3436;
+    margin: 0;
+}
+
+.marcas-title span {
+    color: #e74c3c;
+}
+
+.marcas-grid {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
+}
+
+/* ===== TARJETA DE MARCA ===== */
+.marca-card {
+    background: #f8f9fa;
+    padding: 10px 20px;
+    border-radius: 30px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border: 2px solid transparent;
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: #636e72;
+}
+
+.marca-card:hover {
+    background: #eef0f2;
+    transform: translateY(-2px);
+}
+
+.marca-card.active {
+    background: #2d3436;
+    color: white;
+    border-color: #2d3436;
+    box-shadow: 0 4px 15px rgba(45, 52, 54, 0.2);
+}
+
+.marca-name {
+    font-size: 0.75rem;
+    font-weight: 500;
+    margin: 0;
+    letter-spacing: 0.3px;
+}
+
+.loading-marcas {
+    text-align: center;
+    color: #b2bec3;
+    padding: 15px 0;
+    font-size: 0.85rem;
+    width: 100%;
+}
+
+/* ===== FILTROS ACTIVOS ===== */
+.filtros-activos {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 15px;
+    padding: 10px 0;
+}
+
+.filtro-badge {
+    background: #f1f2f6;
+    padding: 4px 14px;
+    border-radius: 20px;
+    font-size: 0.7rem;
+    color: #636e72;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.filtro-badge .btn-remover {
+    background: none;
+    border: none;
+    color: #e74c3c;
+    cursor: pointer;
+    font-size: 0.8rem;
+    padding: 0 2px;
+}
+
+.filtro-badge .btn-remover:hover {
+    color: #c0392b;
+}
+
+/* ===== RESPONSIVE MARCAS ===== */
+@media (max-width: 640px) {
+    .marca-card {
+        padding: 8px 14px;
+        font-size: 0.7rem;
+    }
+
+    .marca-name {
+        font-size: 0.65rem;
+    }
+
+    .marcas-title {
+        font-size: 1rem;
+    }
+
+    .marcas-grid {
+        gap: 6px;
+    }
+}
+
+@media (min-width: 768px) {
+    .marca-card {
+        padding: 12px 28px;
+        font-size: 0.85rem;
+    }
+}

@@ -3,45 +3,63 @@ const pool = require('../src/config/database');
 const categoriaController = {
     // Obtener todas las categorías
     async getAll(req, res) {
-    try {
-        const result = await pool.query(`
-            SELECT 
-                c.id,
-                c.nombre,
-                c.descripcion,
-                c.created_at,
-                COUNT(p.id) as total_productos
-            FROM categorias c
-            LEFT JOIN productos p ON p.categoria_id = c.id
-            GROUP BY c.id, c.nombre, c.descripcion, c.created_at
-            ORDER BY c.nombre
-        `);
-        res.json({ success: true, data: result.rows });
-    } catch (error) {
-        res.status(500).json({ success: false, message: error.message });
-    }
-},
+        try {
+            const result = await pool.query(`
+                SELECT 
+                    c.id,
+                    c.nombre,
+                    c.descripcion,
+                    c.created_at,
+                    COUNT(p.id) as total_productos
+                FROM categorias c
+                LEFT JOIN productos p ON p.categoria_id = c.id
+                GROUP BY c.id, c.nombre, c.descripcion, c.created_at
+                ORDER BY c.nombre
+            `);
+            res.json({ success: true, data: result.rows });
+        } catch (error) {
+            res.status(500).json({ success: false, message: error.message });
+        }
+    },
 
     // Crear nueva categoría
     async create(req, res) {
         try {
             const { nombre, descripcion } = req.body;
+            
             if (!nombre) {
-                return res.status(400).json({ success: false, message: 'El nombre es requerido' });
+                return res.status(400).json({ 
+                    success: false, 
+                    message: 'El nombre es requerido' 
+                });
             }
             
-            const existe = await pool.query('SELECT id FROM categorias WHERE nombre ILIKE $1', [nombre]);
+            const existe = await pool.query(
+                'SELECT id FROM categorias WHERE nombre ILIKE $1', 
+                [nombre]
+            );
+            
             if (existe.rows.length > 0) {
-                return res.status(400).json({ success: false, message: 'Esta categoría ya existe' });
+                return res.status(400).json({ 
+                    success: false, 
+                    message: 'Esta categoría ya existe' 
+                });
             }
             
             const result = await pool.query(
                 'INSERT INTO categorias (nombre, descripcion) VALUES ($1, $2) RETURNING id, nombre, descripcion',
                 [nombre, descripcion || '']
             );
-            res.status(201).json({ success: true, data: result.rows[0] });
+            
+            res.status(201).json({ 
+                success: true, 
+                data: result.rows[0] 
+            });
         } catch (error) {
-            res.status(500).json({ success: false, message: error.message });
+            res.status(500).json({ 
+                success: false, 
+                message: error.message 
+            });
         }
     },
 
@@ -52,13 +70,22 @@ const categoriaController = {
             const { nombre, descripcion } = req.body;
             
             if (!nombre) {
-                return res.status(400).json({ success: false, message: 'El nombre es requerido' });
+                return res.status(400).json({ 
+                    success: false, 
+                    message: 'El nombre es requerido' 
+                });
             }
             
-            // Verificar si existe otra categoría con el mismo nombre
-            const existe = await pool.query('SELECT id FROM categorias WHERE nombre ILIKE $1 AND id != $2', [nombre, id]);
+            const existe = await pool.query(
+                'SELECT id FROM categorias WHERE nombre ILIKE $1 AND id != $2', 
+                [nombre, id]
+            );
+            
             if (existe.rows.length > 0) {
-                return res.status(400).json({ success: false, message: 'Ya existe una categoría con ese nombre' });
+                return res.status(400).json({ 
+                    success: false, 
+                    message: 'Ya existe una categoría con ese nombre' 
+                });
             }
             
             const result = await pool.query(
@@ -67,32 +94,65 @@ const categoriaController = {
             );
             
             if (result.rows.length === 0) {
-                return res.status(404).json({ success: false, message: 'Categoría no encontrada' });
+                return res.status(404).json({ 
+                    success: false, 
+                    message: 'Categoría no encontrada' 
+                });
             }
             
-            res.json({ success: true, data: result.rows[0] });
+            res.json({ 
+                success: true, 
+                data: result.rows[0] 
+            });
         } catch (error) {
-            res.status(500).json({ success: false, message: error.message });
+            res.status(500).json({ 
+                success: false, 
+                message: error.message 
+            });
         }
     },
 
-    // Eliminar categoría
+    // ELIMINAR CATEGORÍA (HARD DELETE - FÍSICO)
     async delete(req, res) {
         try {
             const { id } = req.params;
             
-            const productos = await pool.query('SELECT id FROM productos WHERE categoria_id = $1', [id]);
-            if (productos.rows.length > 0) {
-                return res.status(400).json({ 
+            // 1. Verificar si la categoría existe
+            const existe = await pool.query('SELECT id FROM categorias WHERE id = $1', [id]);
+            if (existe.rows.length === 0) {
+                return res.status(404).json({ 
                     success: false, 
-                    message: 'No se puede eliminar, hay productos asociados a esta categoría' 
+                    message: 'Categoría no encontrada' 
                 });
             }
             
+            // 2. Verificar si tiene productos asociados
+            const productos = await pool.query(
+                'SELECT id FROM productos WHERE categoria_id = $1', 
+                [id]
+            );
+            
+            // 3. Si tiene productos, no se puede eliminar
+            if (productos.rows.length > 0) {
+                return res.status(400).json({ 
+                    success: false, 
+                    message: 'No se puede eliminar, hay productos asociados a esta categoría. Primero elimina los productos o cámbialos de categoría.' 
+                });
+            }
+            
+            // 4. Eliminar la categoría
             await pool.query('DELETE FROM categorias WHERE id = $1', [id]);
-            res.json({ success: true, message: 'Categoría eliminada correctamente' });
+            
+            res.json({ 
+                success: true, 
+                message: 'Categoría eliminada permanentemente' 
+            });
         } catch (error) {
-            res.status(500).json({ success: false, message: error.message });
+            console.error('❌ Error al eliminar categoría:', error);
+            res.status(500).json({ 
+                success: false, 
+                message: error.message 
+            });
         }
     }
 };

@@ -1,6 +1,7 @@
 const pool = require('../src/config/database');
 
 const pedidoController = {
+    // Crear un nuevo pedido
     async create(req, res) {
         const client = await pool.connect();
         
@@ -88,6 +89,7 @@ const pedidoController = {
         }
     },
 
+    // Obtener todos los pedidos
     async getAll(req, res) {
         try {
             const result = await pool.query(`
@@ -111,6 +113,7 @@ const pedidoController = {
         }
     },
 
+    // Obtener un pedido por ID
     async getById(req, res) {
         try {
             const { id } = req.params;
@@ -139,6 +142,7 @@ const pedidoController = {
         }
     },
 
+    // Actualizar estado del pedido
     async updateEstado(req, res) {
         try {
             const { id } = req.params;
@@ -171,6 +175,42 @@ const pedidoController = {
             });
         } catch (error) {
             res.status(500).json({ success: false, message: error.message });
+        }
+    },
+
+    // ===== ELIMINAR PEDIDO (HARD DELETE - FÍSICO) =====
+    async delete(req, res) {
+        try {
+            const { id } = req.params;
+            
+            // Verificar si el pedido existe
+            const existe = await pool.query('SELECT id FROM pedidos WHERE id = $1', [id]);
+            if (existe.rows.length === 0) {
+                return res.status(404).json({ 
+                    success: false, 
+                    message: 'Pedido no encontrado' 
+                });
+            }
+
+            // Eliminar detalles del pedido
+            await pool.query('DELETE FROM detalle_pedidos WHERE pedido_id = $1', [id]);
+            
+            // Eliminar historial del pedido
+            await pool.query('DELETE FROM historial_pedido WHERE pedido_id = $1', [id]);
+            
+            // Eliminar el pedido
+            await pool.query('DELETE FROM pedidos WHERE id = $1', [id]);
+            
+            res.json({ 
+                success: true, 
+                message: 'Pedido eliminado permanentemente' 
+            });
+        } catch (error) {
+            console.error('Error al eliminar pedido:', error);
+            res.status(500).json({ 
+                success: false, 
+                message: error.message 
+            });
         }
     }
 };

@@ -651,3 +651,64 @@ if (menuInicio) {
         this.classList.add('active');
     });
 }
+
+// ============================================================
+// CARGAR CATEGORÍAS DESDE LA API
+// ============================================================
+
+async function cargarCategoriasFrontend() {
+    try {
+        const grid = document.getElementById('categoriesGrid');
+        if (!grid) return;
+        
+        grid.innerHTML = '<div class="loading-categories">Cargando categorías...</div>';
+        
+        const response = await fetch(`${API_URL}/categorias`);
+        const data = await response.json();
+        
+        if (data.success && data.data.length > 0) {
+            // Categorías fijas: "Todos" y "Ofertas"
+            const categoriasFijas = [
+                { id: 'todos', nombre: 'Todos' },
+                { id: 'ofertas', nombre: 'Ofertas' }
+            ];
+            
+            // Categorías desde la API
+            const categoriasAPI = data.data.map(cat => ({
+                id: cat.id,
+                nombre: cat.nombre
+            }));
+            
+            // Unir listas
+            const todasCategorias = [...categoriasFijas, ...categoriasAPI];
+            
+            grid.innerHTML = todasCategorias.map(cat => `
+                <div class="category-card ${cat.id === 'todos' ? 'active' : ''}" 
+                     data-categoria="${cat.nombre}" 
+                     data-id="${cat.id}">
+                    <span class="category-icon">${cat.id === 'todos' ? '▸' : cat.id === 'ofertas' ? '🏷️' : '▸'}</span>
+                    <span class="category-name">${cat.nombre}</span>
+                </div>
+            `).join('');
+            
+            // Re-inicializar eventos
+            setupCategoryCards();
+        } else {
+            // Si no hay categorías, mostrar solo las fijas
+            grid.innerHTML = `
+                <div class="category-card active" data-categoria="Todos" data-id="todos">
+                    <span class="category-icon">▸</span>
+                    <span class="category-name">Todos</span>
+                </div>
+                <div class="category-card" data-categoria="Ofertas" data-id="ofertas">
+                    <span class="category-icon">🏷️</span>
+                    <span class="category-name">Ofertas</span>
+                </div>
+            `;
+            setupCategoryCards();
+        }
+    } catch (error) {
+        console.error('Error al cargar categorías:', error);
+        document.getElementById('categoriesGrid').innerHTML = '<p class="error">Error al cargar categorías</p>';
+    }
+}

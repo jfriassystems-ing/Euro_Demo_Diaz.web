@@ -98,42 +98,33 @@
     </section>
 
    <!-- ===== CATEGORÍAS ===== -->
-<section id="categorias" class="products-section" style="padding: 30px 0;">
+<section id="categorias" class="categorias-section">
     <div class="container">
         <h2 class="section-title">Categorías</h2>
-        <div class="categories-grid" id="categoriesGrid">
-            <div class="category-card" data-categoria="Todos">
-                <span style="font-size:2rem;">📋</span>
-                <p>Todos</p>
-            </div>
-            <div class="category-card" data-categoria="Ropa">
-                <span style="font-size:2rem;">👕</span>
-                <p>Poloche/camisa</p>
-            </div>
-            <div class="category-card" data-categoria="Pantalones">
-                <span style="font-size:2rem;">👖</span>
-                <p>Pantalones</p>
-            </div>
-            <div class="category-card" data-categoria="Ropa Interior">
-                <span style="font-size:2rem;">🩲</span>
-                <p>Ropa Interior</p>
-            </div>
-            <div class="category-card" data-categoria="Calzado">
-                <span style="font-size:2rem;">👟</span>
-                <p>Calzado</p>
-            </div>
-            <div class="category-card" data-categoria="Accesorios">
-                <span style="font-size:2rem;">💎</span>
-                <p>Accesorios</p>
-            </div>
-            <div class="category-card" data-categoria="Ofertas">
-                <span style="font-size:2rem;">🏷️</span>
-                <p>Ofertas</p>
+        <div class="categorias-wrapper">
+            <div class="categorias-grid" id="categoriesGrid">
+                <!-- Las categorías se cargarán desde la API -->
+                <div class="loading-categories">Cargando categorías...</div>
             </div>
         </div>
     </div>
 </section>
 
+
+<!-- ===== FILTRO POR MARCA ===== -->
+<section id="marcas" class="marcas-section">
+    <div class="container">
+        <div class="marcas-header">
+            <h3 class="marcas-title">Filtrar por <span>Marca</span></h3>
+        </div>
+        <div class="marcas-wrapper">
+            <div class="marcas-grid" id="marcasGrid">
+                <!-- Las marcas se cargarán desde la API -->
+                <div class="loading-marcas">Cargando marcas...</div>
+            </div>
+        </div>
+    </div>
+</section>
 
     <!-- ===== CONTACTO ===== -->
     <section id="contacto" class="products-section" style="padding: 30px 0;">

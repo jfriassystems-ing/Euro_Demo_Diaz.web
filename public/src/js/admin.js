@@ -1,9 +1,9 @@
 ﻿﻿// ============================================================
-// EUROMODADIAZ - admin.js (VERSIÓN SEGURA - SIN ONCLICK)
+// EUROMODADIAZ - admin.js (VERSIÓN CORREGIDA)
 // ============================================================
 
 // ===== CONFIGURACIÓN =====
-const API_URL = 'https://euro-demo-diaz-web.vercel.app/api';
+const API_URL = 'http://localhost:5000/api';
 let token = localStorage.getItem('adminToken');
 let pedidos = [];
 let productos = [];
@@ -364,7 +364,8 @@ window.actualizarEstado = async function() {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',
-                'Authorization': `Bearer ${token}`
+                'Authorization': `Bearer ${token}`,
+                'Accept': 'application/json'
             },
             body: JSON.stringify({ estado: nuevoEstado, observacion })
         });
@@ -376,9 +377,10 @@ window.actualizarEstado = async function() {
             cerrarModal('modalEstado');
             cargarPedidos();
         } else {
-            mostrarToast('❌ ' + data.message, 'error');
+            mostrarToast('❌ ' + (data.message || 'Error al actualizar'), 'error');
         }
     } catch (error) {
+        console.error('Error:', error);
         mostrarToast('❌ Error al actualizar', 'error');
     }
 };
@@ -501,7 +503,8 @@ window.guardarProducto = async function() {
             method,
             headers: {
                 'Content-Type': 'application/json',
-                'Authorization': `Bearer ${token}`
+                'Authorization': `Bearer ${token}`,
+                'Accept': 'application/json'
             },
             body: JSON.stringify(data)
         });
@@ -514,7 +517,7 @@ window.guardarProducto = async function() {
             cargarProductosAdmin();
             if (fileInput) fileInput.value = '';
         } else {
-            mostrarToast('❌ ' + result.message, 'error');
+            mostrarToast('❌ ' + (result.message || 'Error al guardar'), 'error');
         }
         
     } catch (error) {
@@ -567,7 +570,7 @@ async function cargarProductoParaEditar(id) {
 }
 
 window.eliminarProducto = async function(id) {
-    if (!confirm('¿Eliminar este producto?')) return;
+    if (!confirm('¿Eliminar este producto permanentemente?')) return;
     
     try {
         const response = await fetch(`${API_URL}/productos/${id}`, {
@@ -576,14 +579,20 @@ window.eliminarProducto = async function(id) {
         });
         
         const data = await response.json();
+        console.log('🗑️ Respuesta eliminar producto:', data);
         
         if (data.success) {
-            mostrarToast('✅ Producto eliminado', 'success');
+            mostrarToast('✅ Producto eliminado permanentemente', 'success');
+            // Recargar la lista de productos
             cargarProductosAdmin();
+            // Actualizar también categorías y marcas
+            cargarCategoriasAdmin();
+            cargarMarcasAdmin();
         } else {
-            mostrarToast('❌ ' + data.message, 'error');
+            mostrarToast('❌ ' + (data.message || 'Error al eliminar'), 'error');
         }
     } catch (error) {
+        console.error('Error:', error);
         mostrarToast('❌ Error al eliminar', 'error');
     }
 };
@@ -635,6 +644,7 @@ window.eliminarImagen = async function(id) {
             if (productoId) cargarImagenesProducto(productoId);
         }
     } catch (error) {
+        console.error('Error:', error);
         mostrarToast('❌ Error al eliminar imagen', 'error');
     }
 };
@@ -653,6 +663,7 @@ window.hacerPrincipal = async function(id) {
             if (productoId) cargarImagenesProducto(productoId);
         }
     } catch (error) {
+        console.error('Error:', error);
         mostrarToast('❌ Error al actualizar', 'error');
     }
 };
@@ -697,7 +708,8 @@ window.guardarNuevaCategoria = async function() {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'Authorization': `Bearer ${token}`
+                'Authorization': `Bearer ${token}`,
+                'Accept': 'application/json'
             },
             body: JSON.stringify({ nombre, descripcion })
         });
@@ -708,10 +720,12 @@ window.guardarNuevaCategoria = async function() {
             mostrarToast('✅ Categoría creada', 'success');
             cerrarModal('modalNuevaCategoria');
             cargarCategorias();
+            cargarCategoriasAdmin();
         } else {
-            mostrarToast('❌ ' + data.message, 'error');
+            mostrarToast('❌ ' + (data.message || 'Error al crear'), 'error');
         }
     } catch (error) {
+        console.error('Error:', error);
         mostrarToast('❌ Error al crear', 'error');
     }
 };
@@ -732,10 +746,12 @@ window.eliminarCategoria = async function() {
         if (data.success) {
             mostrarToast('✅ Categoría eliminada', 'success');
             cargarCategorias();
+            cargarCategoriasAdmin();
         } else {
-            mostrarToast('❌ ' + data.message, 'error');
+            mostrarToast('❌ ' + (data.message || 'Error al eliminar'), 'error');
         }
     } catch (error) {
+        console.error('Error:', error);
         mostrarToast('❌ Error al eliminar', 'error');
     }
 };
@@ -758,7 +774,8 @@ window.guardarNuevaMarca = async function() {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'Authorization': `Bearer ${token}`
+                'Authorization': `Bearer ${token}`,
+                'Accept': 'application/json'
             },
             body: JSON.stringify({ nombre })
         });
@@ -769,10 +786,12 @@ window.guardarNuevaMarca = async function() {
             mostrarToast('✅ Marca creada', 'success');
             cerrarModal('modalNuevaMarca');
             cargarMarcas();
+            cargarMarcasAdmin();
         } else {
-            mostrarToast('❌ ' + data.message, 'error');
+            mostrarToast('❌ ' + (data.message || 'Error al crear'), 'error');
         }
     } catch (error) {
+        console.error('Error:', error);
         mostrarToast('❌ Error al crear', 'error');
     }
 };
@@ -793,10 +812,12 @@ window.eliminarMarca = async function() {
         if (data.success) {
             mostrarToast('✅ Marca eliminada', 'success');
             cargarMarcas();
+            cargarMarcasAdmin();
         } else {
-            mostrarToast('❌ ' + data.message, 'error');
+            mostrarToast('❌ ' + (data.message || 'Error al eliminar'), 'error');
         }
     } catch (error) {
+        console.error('Error:', error);
         mostrarToast('❌ Error al eliminar', 'error');
     }
 };
@@ -891,47 +912,13 @@ function setupTabs() {
                 cargarProductosAdmin();
                 cargarCategorias();
                 cargarMarcas();
-            }
-        });
-    });
-}
-
-
-function setupTabs() {
-    const tabs = document.querySelectorAll('.tab-btn');
-    tabs.forEach(tab => {
-        tab.addEventListener('click', function() {
-            tabs.forEach(t => t.classList.remove('active'));
-            this.classList.add('active');
-            
-            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-            
-            const tabId = this.dataset.tab;
-            document.getElementById('tab' + tabId.charAt(0).toUpperCase() + tabId.slice(1)).classList.add('active');
-            
-            if (tabId === 'pedidos') {
-                cargarPedidos();
-            } else if (tabId === 'productos') {
-                cargarProductosAdmin();
-                cargarCategorias();
-                cargarMarcas();
             } else if (tabId === 'categorias') {
                 cargarCategoriasAdmin();
+                cargarMarcasAdmin();
             }
         });
     });
 }
-
-
-
-
-
-
-
-
-
-
-
 
 // ============================================================
 // GENERAR SKU
@@ -1050,31 +1037,6 @@ document.addEventListener('click', function(e) {
 });
 
 // ============================================================
-// INICIALIZAR
-// ============================================================
-
-document.addEventListener('DOMContentLoaded', function() {
-    console.log('📊 EUROMODADIAZ - Panel de Administración');
-    
-    if (!verificarAuth()) return;
-    
-    setupTabs();
-    cargarPedidos();
-    cargarCategorias();
-    cargarMarcas();
-    
-    console.log('✅ Admin listo');
-});
-
-
-
-
-
-
-
-
-
-// ============================================================
 // CATEGORÍAS ADMIN
 // ============================================================
 
@@ -1087,6 +1049,8 @@ async function cargarCategoriasAdmin() {
             headers: { 'Authorization': `Bearer ${token}` }
         });
         const data = await response.json();
+        
+        console.log('📦 Categorías admin recibidas:', data);
         
         if (data.success) {
             renderizarCategoriasAdmin(data.data);
@@ -1107,16 +1071,17 @@ function renderizarCategoriasAdmin(categorias) {
         return;
     }
     
+    console.log('📦 Renderizando categorías con datos:', categorias);
+    
     grid.innerHTML = categorias.map(cat => {
-        // Asegurar que total_productos exista
-        const total = cat.total_productos !== undefined ? cat.total_productos : 0;
+        const total = cat.total_productos !== undefined && cat.total_productos !== null ? cat.total_productos : 0;
         
         return `
-        <div class="categoria-admin-card">
+        <div class="categoria-admin-card" data-id="${cat.id}">
             <div class="info">
                 <div class="nombre">${cat.nombre}</div>
                 ${cat.descripcion ? `<div class="descripcion">${cat.descripcion}</div>` : ''}
-                <div class="total-productos">
+                <div class="total-productos" style="font-weight:600;color:#e74c3c;">
                     <i class="fas fa-box"></i> ${total} productos
                 </div>
             </div>
@@ -1130,7 +1095,10 @@ function renderizarCategoriasAdmin(categorias) {
             </div>
         </div>
     `}).join('');
+    
+    console.log('✅ Categorías renderizadas correctamente');
 }
+
 function abrirModalCategoria() {
     document.getElementById('nuevaCategoriaNombre').value = '';
     document.getElementById('nuevaCategoriaDescripcion').value = '';
@@ -1151,7 +1119,8 @@ async function guardarNuevaCategoria() {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'Authorization': `Bearer ${token}`
+                'Authorization': `Bearer ${token}`,
+                'Accept': 'application/json'
             },
             body: JSON.stringify({ nombre, descripcion })
         });
@@ -1163,9 +1132,10 @@ async function guardarNuevaCategoria() {
             cerrarModal('modalNuevaCategoria');
             cargarCategoriasAdmin();
         } else {
-            mostrarToast('❌ ' + data.message, 'error');
+            mostrarToast('❌ ' + (data.message || 'Error al crear'), 'error');
         }
     } catch (error) {
+        console.error('Error:', error);
         mostrarToast('❌ Error al crear', 'error');
     }
 }
@@ -1192,7 +1162,8 @@ async function guardarEditarCategoria() {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',
-                'Authorization': `Bearer ${token}`
+                'Authorization': `Bearer ${token}`,
+                'Accept': 'application/json'
             },
             body: JSON.stringify({ nombre, descripcion })
         });
@@ -1204,9 +1175,10 @@ async function guardarEditarCategoria() {
             cerrarModal('modalEditarCategoria');
             cargarCategoriasAdmin();
         } else {
-            mostrarToast('❌ ' + data.message, 'error');
+            mostrarToast('❌ ' + (data.message || 'Error al actualizar'), 'error');
         }
     } catch (error) {
+        console.error('Error:', error);
         mostrarToast('❌ Error al actualizar', 'error');
     }
 }
@@ -1226,9 +1198,200 @@ async function eliminarCategoriaAdmin(id) {
             mostrarToast('✅ Categoría eliminada', 'success');
             cargarCategoriasAdmin();
         } else {
-            mostrarToast('❌ ' + data.message, 'error');
+            mostrarToast('❌ ' + (data.message || 'Error al eliminar'), 'error');
         }
     } catch (error) {
+        console.error('Error:', error);
         mostrarToast('❌ Error al eliminar', 'error');
     }
 }
+
+// ============================================================
+// MARCAS ADMIN
+// ============================================================
+
+async function cargarMarcasAdmin() {
+    try {
+        const grid = document.getElementById('marcasAdminGrid');
+        if (!grid) {
+            console.warn('⚠️ No se encontró #marcasAdminGrid');
+            return;
+        }
+        
+        grid.innerHTML = '<div class="loading">Cargando marcas...</div>';
+        
+        const response = await fetch(`${API_URL}/marcas`, {
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
+        const data = await response.json();
+        
+        console.log('🏷️ Marcas recibidas (RAW):', data);
+        
+        if (data.success && data.data && data.data.length > 0) {
+            data.data.forEach(m => {
+                console.log(`📊 ${m.nombre}: ${m.total_productos} productos`);
+            });
+            renderizarMarcasAdmin(data.data);
+        } else {
+            grid.innerHTML = `<div class="empty">No hay marcas creadas</div>`;
+        }
+    } catch (error) {
+        console.error('Error al cargar marcas:', error);
+        document.getElementById('marcasAdminGrid').innerHTML = '<p class="error">Error al cargar marcas</p>';
+    }
+}
+
+function renderizarMarcasAdmin(marcas) {
+    const grid = document.getElementById('marcasAdminGrid');
+    
+    if (!marcas || marcas.length === 0) {
+        grid.innerHTML = `<div class="empty">No hay marcas creadas</div>`;
+        return;
+    }
+    
+    console.log('🏷️ Renderizando marcas con datos:', marcas);
+    
+    grid.innerHTML = marcas.map(m => {
+        const total = m.total_productos !== undefined && m.total_productos !== null ? m.total_productos : 0;
+        
+        return `
+        <div class="marca-admin-card" data-id="${m.id}">
+            <div class="info">
+                <div class="nombre">${m.nombre}</div>
+                <div class="total-productos" style="font-weight:600;color:#e74c3c;">
+                    <i class="fas fa-box"></i> ${total} productos
+                </div>
+            </div>
+            <div class="acciones">
+                <button class="btn-action btn-action-edit" onclick="abrirModalEditarMarca(${m.id}, '${m.nombre}')">
+                    <i class="fas fa-edit"></i>
+                </button>
+                <button class="btn-action btn-action-delete" onclick="eliminarMarcaAdmin(${m.id})">
+                    <i class="fas fa-trash"></i>
+                </button>
+            </div>
+        </div>
+    `}).join('');
+    
+    console.log('✅ Marcas renderizadas correctamente');
+}
+
+function abrirModalMarca() {
+    document.getElementById('nuevaMarcaNombre').value = '';
+    document.getElementById('modalNuevaMarca').classList.add('active');
+}
+
+async function guardarNuevaMarca() {
+    const nombre = document.getElementById('nuevaMarcaNombre').value.trim();
+    
+    if (!nombre) {
+        mostrarToast('⚠️ El nombre es requerido', 'error');
+        return;
+    }
+    
+    try {
+        const response = await fetch(`${API_URL}/marcas`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`,
+                'Accept': 'application/json'
+            },
+            body: JSON.stringify({ nombre })
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+            mostrarToast('✅ Marca creada', 'success');
+            cerrarModal('modalNuevaMarca');
+            cargarMarcasAdmin();
+        } else {
+            mostrarToast('❌ ' + (data.message || 'Error al crear'), 'error');
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        mostrarToast('❌ Error al crear', 'error');
+    }
+}
+
+function abrirModalEditarMarca(id, nombre) {
+    document.getElementById('editMarcaId').value = id;
+    document.getElementById('editMarcaNombre').value = nombre;
+    document.getElementById('modalEditarMarca').classList.add('active');
+}
+
+async function guardarEditarMarca() {
+    const id = document.getElementById('editMarcaId').value;
+    const nombre = document.getElementById('editMarcaNombre').value.trim();
+    
+    if (!nombre) {
+        mostrarToast('⚠️ El nombre es requerido', 'error');
+        return;
+    }
+    
+    try {
+        const response = await fetch(`${API_URL}/marcas/${id}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`,
+                'Accept': 'application/json'
+            },
+            body: JSON.stringify({ nombre })
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+            mostrarToast('✅ Marca actualizada', 'success');
+            cerrarModal('modalEditarMarca');
+            cargarMarcasAdmin();
+        } else {
+            mostrarToast('❌ ' + (data.message || 'Error al actualizar'), 'error');
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        mostrarToast('❌ Error al actualizar', 'error');
+    }
+}
+
+async function eliminarMarcaAdmin(id) {
+    if (!confirm('¿Eliminar esta marca?')) return;
+    
+    try {
+        const response = await fetch(`${API_URL}/marcas/${id}`, {
+            method: 'DELETE',
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+            mostrarToast('✅ Marca eliminada', 'success');
+            cargarMarcasAdmin();
+        } else {
+            mostrarToast('❌ ' + (data.message || 'Error al eliminar'), 'error');
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        mostrarToast('❌ Error al eliminar', 'error');
+    }
+}
+
+// ============================================================
+// INICIALIZAR
+// ============================================================
+
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('📊 EUROMODADIAZ - Panel de Administración');
+    
+    if (!verificarAuth()) return;
+    
+    setupTabs();
+    cargarPedidos();
+    cargarCategorias();
+    cargarMarcas();
+    
+    console.log('✅ Admin listo');
+});

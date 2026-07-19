@@ -30,7 +30,7 @@ const productoController = {
         }
     },
 
-    // ===== PRODUCTOS EN OFERTA (NUEVO) =====
+    // Productos en oferta
     async getOfertas(req, res) {
         try {
             const query = `
@@ -187,21 +187,53 @@ const productoController = {
         }
     },
 
-    // Eliminar producto (soft delete)
-    async delete(req, res) {
-        try {
-            const { id } = req.params;
-            const query = 'UPDATE productos SET activo = false WHERE id = $1 RETURNING *';
-            const result = await pool.query(query, [id]);
-            
-            if (result.rows.length === 0) {
-                return res.status(404).json({ success: false, message: 'Producto no encontrado' });
-            }
-            res.json({ success: true, message: 'Producto eliminado correctamente' });
-        } catch (error) {
-            res.status(500).json({ success: false, message: error.message });
+  // ELIMINAR UN PRODUCTO ESPECÍFICO (HARD DELETE - FÍSICO)
+async delete(req, res) {
+    try {
+        const { id } = req.params;
+        
+        console.log('🗑️ Eliminando producto ID:', id);
+        
+        // Verificar si el producto existe
+        const existe = await pool.query('SELECT id FROM productos WHERE id = $1', [id]);
+        if (existe.rows.length === 0) {
+            return res.status(404).json({ 
+                success: false, 
+                message: 'Producto no encontrado' 
+            });
         }
-    },
+
+        // 1. Eliminar imágenes del producto
+        await pool.query('DELETE FROM producto_imagenes WHERE producto_id = $1', [id]);
+        console.log('✅ Imágenes eliminadas');
+        
+        // 2. Eliminar variantes del producto
+        await pool.query('DELETE FROM variantes_producto WHERE producto_id = $1', [id]);
+        console.log('✅ Variantes eliminadas');
+        
+        // 3. Eliminar inventario del producto
+        await pool.query(`
+            DELETE FROM inventario 
+            WHERE variante_id IN (SELECT id FROM variantes_producto WHERE producto_id = $1)
+        `, [id]);
+        console.log('✅ Inventario eliminado');
+        
+        // 4. Eliminar el producto
+        await pool.query('DELETE FROM productos WHERE id = $1', [id]);
+        console.log('✅ Producto eliminado');
+        
+        res.json({ 
+            success: true, 
+            message: 'Producto eliminado permanentemente' 
+        });
+    } catch (error) {
+        console.error('❌ Error al eliminar producto:', error);
+        res.status(500).json({ 
+            success: false, 
+            message: error.message 
+        });
+    }
+},
 
     // Buscar productos
     async search(req, res) {

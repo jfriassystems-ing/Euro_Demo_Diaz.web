@@ -72,11 +72,24 @@ const productoModel = {
         return result.rows[0];
     },
 
-    async delete(id) {
-        const query = `UPDATE productos SET activo = false WHERE id = $1 RETURNING *`;
-        const result = await pool.query(query, [id]);
-        return result.rows[0];
-    },
+   // ELIMINAR PRODUCTO (HARD DELETE - FÍSICO)
+async delete(id) {
+    // 1. Eliminar imágenes
+    await pool.query('DELETE FROM producto_imagenes WHERE producto_id = $1', [id]);
+    
+    // 2. Eliminar variantes
+    await pool.query('DELETE FROM variantes_producto WHERE producto_id = $1', [id]);
+    
+    // 3. Eliminar inventario
+    await pool.query(`
+        DELETE FROM inventario 
+        WHERE variante_id IN (SELECT id FROM variantes_producto WHERE producto_id = $1)
+    `, [id]);
+    
+    // 4. Eliminar el producto
+    const result = await pool.query('DELETE FROM productos WHERE id = $1 RETURNING *', [id]);
+    return result.rows[0] || null;
+},
 
     async search(term) {
         const query = `
